@@ -1,6 +1,49 @@
+module load anaconda2
 source activate machine_learning
 
+cd MLjetsCalib
+
+* Make input CSV files
+mkdir csv
+# assume ntuples are under ${PWD}/ntuples/ e.g. via symlink
+
+./makeInput_smallR.py ntuples/user.mlisovyi.361024.JZ4W.DAOD_JETM6.e3668_s2576_s2132_r7725_r7676_p2719_EXT0.smallR_20161020_v1_output.root/user.mlisovyi.9682259._000001.output.root
+
+# etc..for all files (maybe use GNU parallel)
+
+* Train network (pT,eta,E) -> (pT,E)
+Assume (eta,phi) measured perfectly
+
+./dnnCalibrate_smallR_train.py csv/user.mlisovyi.9682259._000005.output.csv 
+
+This will create a file called dnn.pT_E.h5 (containig the DNN) and a file called scaler.pkl (containing the StandardScaler used to preprocess the input)
+
+* Predict output 
+./dnnCalibrate_smallR_predict.py csv/user.mlisovyi.9682259._000005.output.csv dnn.pT_E.h5
+
+This will create a ROOT file called user.mlisovyi.9682259._000005.dnn.pT_E.histograms.root
+Repeat this for all csv files (maybe use GNU parallel)
+
+* Make plots
+The output file of the previous step contains response histograms for several eta regions indexed as 0...N
+
+mkdir img
+
+./plot_response.py pT 0
+./plot_response.py pT 1
+...
+
+./plot_response.py E 0
+./plot_response.py E 1
+...
+
+
+###################
+# do you need GPUs?
 module load gcc/4.8.1
 module load cuda/6.5
 
+# to submit to SciNet/Gravity GPU cluster
 qsub -l nodes=1:ppn=12:gpus=2,walltime=12:00:00 -q gravity -I
+
+
