@@ -23,10 +23,9 @@ np.set_printoptions( precision=2, suppress=True )
 
 # change this to increase the number of eta slices
 etabins = [ [0.0,0.1], [0.1,0.2], [0.2,0.3], [0.3,0.4], [0.4,0.5], [0.5,0.6], [0.6,0.7], [0.7,0.8], [0.8,0.9], [0.9,1.0], [1.0,2.5] ]
-
+ptbins  = [ [0., 20.], [ 20., 30.], [30., 40], [40., 60.], [60., 80.], [80., 100.], [100., 400.], [400., 1200.], [1200.,3000.] ] 
 
 #################
-
 
 def FindEtaBin( eta ):
    eta = abs(eta) 
@@ -41,11 +40,27 @@ def FindEtaBin( eta ):
      ieta += 1
    print "WARNING: eta =", eta
 
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+def FindPtBin( pt ):
+
+   ipt = 0
+   for bin in ptbins:
+     ptmin = bin[0]
+     ptmax = bin[1]
+
+     if pt >= ptmin and pt <= ptmax:
+       return ipt
+     ipt += 1
+   print "WARNING: pt =", pt
+
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 testing_filename  = sys.argv[1]
 
-calibration = "pT_eta_E"
+#calibration = "pT_eta_E"
+calibration = "pT_E"
 
 with open( "scaler.smallR.%s.pkl" % calibration, "rb" ) as file_scaler:
   scaler = pickle.load( file_scaler )
@@ -78,8 +93,7 @@ print nocalib_test
 print "INFO: testing truth:"
 print truth_test
 
-
-nocalib_test = scaler.transform( nocalib_test )
+#nocalib_test = scaler.transform( nocalib_test )
 #E_truth_test = truth_test[:,2]
 #truth_test = truth_test[:,1:]
 
@@ -111,9 +125,9 @@ h_pT_resolution_nocalib  = TH2F( "pT_resolution_nocalib",  "p_{T} resolution (no
 h_pT_resolution_calib    = TH2F( "pT_resolution_calib",    "p_{T} resolution (calib);truth-level jet p_{T} [GeV];(p_{T}^{reco}-p_{T}^{truth}) / p_{T}^{truth}",    100, 0., 1000., 20, 0., 2. )
 h_pT_resolution_dnncalib = TH2F( "pT_resolution_dnncalib", "p_{T} resolution (dnncalib);truth-level jet p_{T} [GeV];(p_{T}^{reco}-p_{T}^{truth}) / p_{T}^{truth}", 100, 0., 1000., 20, 0., 2. )
  
-h_pT_response_nocalib  = TH2F( "pT_response_nocalib",  "p_{T} response non-calib jets;truth-level jet p_{T} [GeV];p_{T}^{reco}/p_{T}^{truth}", 25, 0., 1000., 20, 0., 2. )
-h_pT_response_calib    = TH2F( "pT_response_calib",    "p_{T} response calib jets;truth-level jet p_{T} [GeV];p_{T}^{reco}/p_{T}^{truth}",     25, 0., 1000., 20, 0., 2. )
-h_pT_response_dnncalib = TH2F( "pT_response_dnncalib", "p_{T} response dnn-calib jets;truth-level jet p_{T} [GeV];p_{T}^{reco}/p_{T}^{truth}", 25, 0., 1000., 20, 0., 2. )
+h_pT_response_nocalib  = TH2F( "pT_response_nocalib",  "p_{T} response non-calib jets;truth-level jet p_{T} [GeV];p_{T}^{reco}/p_{T}^{truth}",20, 0., 1000., 20, 0., 2. )
+h_pT_response_calib    = TH2F( "pT_response_calib",    "p_{T} response calib jets;truth-level jet p_{T} [GeV];p_{T}^{reco}/p_{T}^{truth}",    20, 0., 1000., 20, 0., 2. )
+h_pT_response_dnncalib = TH2F( "pT_response_dnncalib", "p_{T} response dnn-calib jets;truth-level jet p_{T} [GeV];p_{T}^{reco}/p_{T}^{truth}",20, 0., 1000., 20, 0., 2. )
 
 
 histograms = {}
@@ -122,27 +136,43 @@ for ieta in range(len(etabins)):
   etamax = etabins[ieta][1]
 
   histograms['pT_response_nocalib_etabin_%i'%ieta]  = TH2F( "pT_response_nocalib_etabin_%i"%ieta, \
-             "p_{T} response non-calib jets (%2.1f < |#eta| < %2.1f);p_{T}^{truth};p_{T}^{reco}/p_{T}^{truth}" % (etamin,etamax), 25, 0., 1000., 25, 0., 2. )
+             "p_{T} response non-calib jets (%2.1f < |#eta| < %2.1f);p_{T}^{truth};p_{T}^{reco}/p_{T}^{truth}" % (etamin,etamax),20, 0., 1000., 25, 0., 2. )
   histograms['pT_response_calib_etabin_%i'%ieta]    = TH2F( "pT_response_calib_etabin_%i"%ieta, \
-             "p_{T} response calib jets (%2.1f < |#eta| < %2.1f);p_{T}^{truth};p_{T}^{reco}/p_{T}^{truth}" % (etamin,etamax), 25, 0., 1000., 25, 0., 2. )
+             "p_{T} response calib jets (%2.1f < |#eta| < %2.1f);p_{T}^{truth};p_{T}^{reco}/p_{T}^{truth}" % (etamin,etamax),20, 0., 1000., 25, 0., 2. )
   histograms['pT_response_dnncalib_etabin_%i'%ieta] = TH2F( "pT_response_dnncalib_etabin_%i"%ieta, \
-              "p_{T} response dnn-calib jets (%2.1f < |#eta| < %2.1f);p_{T}^{truth};p_{T}^{reco}/p_{T}^{truth}" % (etamin,etamax), 25, 0., 1000., 25, 0., 2. )
+              "p_{T} response dnn-calib jets (%2.1f < |#eta| < %2.1f);p_{T}^{truth};p_{T}^{reco}/p_{T}^{truth}" % (etamin,etamax),20, 0., 1000., 25, 0., 2. )
 
 
   histograms['E_response_nocalib_etabin_%i'%ieta]  = TH2F( "E_response_nocalib_etabin_%i"%ieta, \
-             "Energy response non-calib jets (%2.1f < |#eta| < %2.1f);E^{truth};E^{reco}/E^{truth}" % (etamin,etamax), 25, 0., 1000., 25, 0., 2. )
+             "Energy response non-calib jets (%2.1f < |#eta| < %2.1f);p_{T}^{truth};E^{reco}/E^{truth}" % (etamin,etamax),20, 0., 1000., 25, 0., 2. )
   histograms['E_response_calib_etabin_%i'%ieta]    = TH2F( "E_response_calib_etabin_%i"%ieta, \
-             "Energy response calib jets (%2.1f < |#eta| < %2.1f);E^{truth};E^{reco}/E^{truth}" % (etamin,etamax), 25, 0., 1000., 25, 0., 2. )
+             "Energy response calib jets (%2.1f < |#eta| < %2.1f);p_{T}^{truth};E^{reco}/E^{truth}" % (etamin,etamax),20, 0., 1000., 25, 0., 2. )
   histograms['E_response_dnncalib_etabin_%i'%ieta] = TH2F( "E_response_dnncalib_etabin_%i"%ieta, \
-              "Energy response dnn-calib jets (%2.1f < |#eta| < %2.1f);E^{truth};E^{reco}/E^{truth}" % (etamin,etamax), 25, 0., 1000., 25, 0., 2. )
+              "Energy response dnn-calib jets (%2.1f < |#eta| < %2.1f);p_{T}^{truth};E^{reco}/E^{truth}" % (etamin,etamax),20, 0., 1000., 25, 0., 2. )
+
+
+for ipt in range(len(ptbins)):
+  ptmin = ptbins[ipt][0]
+  ptmax = ptbins[ipt][1]
+
+  histograms['pT_response_nocalib_ptbin_%i'%ipt] = TH2F( "pT_response_nocalib_ptbin_%i"%ipt, \
+             "p_{T} response non-calib jets (%4.0f < p_{T} < %4.0f);|#eta_{det}|;p_{T}^{reco}/p_{T}^{truth}" % (ptmin,ptmax), 15, 0., 3.0, 20, 0., 2. )
+  histograms['pT_response_calib_ptbin_%i'%ipt] = TH2F( "pT_response_calib_ptbin_%i"%ipt, \
+             "p_{T} response calib jets (%4.0f < p_{T} < %4.0f);|#eta_{det}|;p_{T}^{reco}/p_{T}^{truth}" % (ptmin,ptmax), 15, 0., 3.0, 20, 0., 2. )
+  histograms['pT_response_dnncalib_ptbin_%i'%ipt] = TH2F( "pT_response_dnncalib_ptbin_%i"%ipt, \
+             "p_{T} response dnn-calib jets (%4.0f < p_{T} < %4.0f);|#eta_{det}|;p_{T}^{reco}/p_{T}^{truth}" % (ptmin,ptmax), 15, 0., 3.0, 20, 0., 2. )
+
+  histograms['E_response_nocalib_ptbin_%i'%ipt] = TH2F( "E_response_nocalib_ptbin_%i"%ipt, \
+             "E response non-calib jets (%4.0f < p_{T} < %4.0f);|#eta_{det}|;E^{reco}/E^{truth}" % (ptmin,ptmax), 15, 0., 3.0, 20, 0., 2. )
+  histograms['E_response_calib_ptbin_%i'%ipt] = TH2F( "E_response_calib_ptbin_%i"%ipt, \
+             "E response calib jets (%4.0f < p_{T} < %4.0f);|#eta_{det}|;E^{reco}/E^{truth}" % (ptmin,ptmax), 15, 0., 3.0, 20, 0., 2. )
+  histograms['E_response_dnncalib_ptbin_%i'%ipt] = TH2F( "E_response_dnncalib_ptbin_%i"%ipt, \
+             "E response dnn-calib jets (%4.0f < p_{T} < %4.0f);|#eta_{det}|;E^{reco}/E^{truth}" % (ptmin,ptmax), 15, 0., 3.0, 20, 0., 2. )
 
 
 
 # transform back to usual representation
-#calib_test   = scaler.inverse_transform( calib_test )
-nocalib_test = scaler.inverse_transform( nocalib_test )
-#truth_test   = scaler.inverse_transform( truth_test )
-#predict_dnn  = scaler.inverse_transform( predict_dnn )
+#nocalib_test = scaler.inverse_transform( nocalib_test )
 
 # Print out example
 for i in range(10):
@@ -156,18 +186,32 @@ for i in range( n_entries ):
   pT_truth   = truth_test[i][0]
   pT_calib   = calib_test[i][0]
   pT_nocalib = nocalib_test[i][0]
-  pT_dnncalib  = predict_dnn[i][0]
 
   eta_truth     = truth_test[i][1]
   eta_calib     = calib_test[i][1]
   eta_nocalib   = nocalib_test[i][1]
-  eta_dnncalib  = predict_dnn[i][1]
 
   E_truth   = truth_test[i][2]
   E_calib   = calib_test[i][2]
   E_nocalib = nocalib_test[i][2]
-  E_dnncalib  = predict_dnn[i][2]
 #  E_dnncalib     = predict_dnn[i]
+
+  if calibration == "pT_eta_E":
+     pT_dnncalib   = predict_dnn[i][0]
+     eta_dnncalib  = predict_dnn[i][1]
+     E_dnncalib    = predict_dnn[i][2]
+  elif calibration == "pT_E":
+     pT_dnncalib   = predict_dnn[i][0]
+     eta_dnncalib  = eta_nocalib
+     E_dnncalib    = predict_dnn[i][1]
+  elif calibration == "pT_eta":
+     pT_dnncalib   = predict_dnn[i][0]
+     eta_dnncalib  = predict_dnn[i][1]
+     E_dnncalib    = E_nocalib
+  elif calibration == "eta_E":
+     pT_dnncalib   = pT_nocalib
+     eta_dnncalib  = predict_dnn[i][0]
+     E_dnncalib    = predict_dnn[i][1]
  
   h_pT_calib.Fill(    pT_truth, pT_calib )
   h_pT_nocalib.Fill(  pT_truth, pT_nocalib )
@@ -194,15 +238,25 @@ for i in range( n_entries ):
   h_pT_response_dnncalib.Fill( pT_dnncalib, pT_response_dnncalib, w )
 
   # fill the same, but divided into eta bins
-  ieta = FindEtabin( abs(eta_calib) )
+  ieta = FindEtaBin( abs(eta_calib) )
 
   histograms['pT_response_nocalib_etabin_%i'%ieta].Fill(  pT_truth, pT_response_nocalib, w )
   histograms['pT_response_calib_etabin_%i'%ieta].Fill(    pT_truth, pT_response_calib, w )
   histograms['pT_response_dnncalib_etabin_%i'%ieta].Fill( pT_truth, pT_response_dnncalib, w )
 
-  histograms['E_response_nocalib_etabin_%i'%ieta].Fill(  E_truth, E_response_nocalib, w )
-  histograms['E_response_calib_etabin_%i'%ieta].Fill(    E_truth, E_response_calib, w )
-  histograms['E_response_dnncalib_etabin_%i'%ieta].Fill( E_truth, E_response_dnncalib, w )
+  histograms['E_response_nocalib_etabin_%i'%ieta].Fill(  pT_truth, E_response_nocalib, w )
+  histograms['E_response_calib_etabin_%i'%ieta].Fill(    pT_truth, E_response_calib, w )
+  histograms['E_response_dnncalib_etabin_%i'%ieta].Fill( pT_truth, E_response_dnncalib, w )
+
+  # fill the same, but divided into pT bins
+  ipt = FindPtBin( pT_truth )
+  histograms['pT_response_nocalib_ptbin_%i'%ipt].Fill(  abs(eta_truth), pT_response_nocalib, w )
+  histograms['pT_response_calib_ptbin_%i'%ipt].Fill(    abs(eta_truth), pT_response_calib, w )
+  histograms['pT_response_dnncalib_ptbin_%i'%ipt].Fill( abs(eta_truth), pT_response_dnncalib, w )
+
+  histograms['E_response_nocalib_ptbin_%i'%ipt].Fill(  abs(eta_truth), E_response_nocalib, w )
+  histograms['E_response_calib_ptbin_%i'%ipt].Fill(    abs(eta_truth), E_response_calib, w )
+  histograms['E_response_dnncalib_ptbin_%i'%ipt].Fill( abs(eta_truth), E_response_dnncalib, w )
 
   # Resolution
   pT_resolution_nocalib  = ( pT_nocalib  - pT_truth ) / pT_truth if pT_truth > 0. else -1.

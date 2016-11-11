@@ -46,7 +46,7 @@ def PrintATLASLabel( x = 0.5, y = 0.87, lumi = 0. ):
   l.SetTextColor(kBlack)
   l.DrawLatex(x,y,"ATLAS");
   l.SetTextFont(42);
-  l.DrawLatex(x+0.13,y,"Simulation Internal");
+  l.DrawLatex(x+0.14,y,"Simulation Internal");
   #l.DrawLatex(x+0.14,y,"Preliminary")
   l.SetTextSize(0.04)
 #  s = "#sqrt{s} = 13 TeV, %2.1f fb^{-1}" % (lumi/1000.)
@@ -70,9 +70,9 @@ if len( sys.argv ) > 3:
 infile = TFile.Open( infilename )
 
 
-h_calib    = infile.Get( "%s_response_calib_%s" % ( obs, etaregion ) )
-h_nocalib  = infile.Get( "%s_response_nocalib_%s" % ( obs, etaregion ) )
-h_dnncalib = infile.Get( "%s_response_dnncalib_%s" % ( obs, etaregion ) )
+h_calib    = infile.Get( "%s_response_calib_etabin_%s" % ( obs, etaregion ) )
+h_nocalib  = infile.Get( "%s_response_nocalib_etabin_%s" % ( obs, etaregion ) )
+h_dnncalib = infile.Get( "%s_response_dnncalib_etabin_%s" % ( obs, etaregion ) )
 
 #h_calib.Rebin2D(2,2)
 #h_nocalib.Rebin2D(2,2)
@@ -83,8 +83,8 @@ p_nocalib  = h_nocalib.ProfileX()
 p_dnncalib = h_dnncalib.ProfileX()
 
 SetTH1FStyle( p_calib,    color=kRed, linewidth=2, markerstyle=22 )
-SetTH1FStyle( p_nocalib,  color=kBlack, linewidth=2, markerstyle=21 )
-SetTH1FStyle( p_dnncalib, color=kGreen-2, linewidth=2, markerstyle=26 )
+SetTH1FStyle( p_nocalib,  color=kBlack, linewidth=2, markerstyle=20 )
+SetTH1FStyle( p_dnncalib, color=kGreen-2, linewidth=2, markerstyle=23 )
 
 c = TCanvas( "C", "C", 1000, 800 )
 
@@ -95,14 +95,14 @@ p_nocalib.GetYaxis().SetTitle( "%s / %s_{truth}" % ( obs, obs ))
 
 p_nocalib.Draw()
 p_calib.Draw( "same" )
-#p_dnncalib.Draw( "same" )
+p_dnncalib.Draw( "same" )
 
 l = TLine()
 l.SetLineStyle( kDashed )
 l.DrawLine( 0., 1., 1000, 1. ) 
 
-gPad.SetLogx()
-p_nocalib.GetXaxis().SetMoreLogLabels()
+#gPad.SetLogx()
+#p_nocalib.GetXaxis().SetMoreLogLabels()
 p_nocalib.GetXaxis().SetNoExponent()
 
 # make legend
@@ -116,7 +116,7 @@ leg = MakeLegend( lparams )
 leg.SetTextFont( 42 )
 leg.SetTextSize( 0.03 )
 leg.AddEntry( p_nocalib,   "Uncalibrated", "lp" )
-leg.AddEntry( p_calib,     "Calibrated",   "lp" )
+leg.AddEntry( p_calib,     "ATLAS-calibrated",   "lp" )
 leg.AddEntry( p_dnncalib,  "DNN-calibrated", "lp" )
 leg.Draw()
 leg.SetY1( leg.GetY1() - lparams['height'] * leg.GetNRows() )
