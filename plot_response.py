@@ -89,13 +89,21 @@ SetTH1FStyle( p_dnncalib, color=kGreen-2, linewidth=2, markerstyle=26 )
 c = TCanvas( "C", "C", 1000, 800 )
 
 p_nocalib.SetMinimum(0.9)
-p_nocalib.SetMaximum(1.2)
+p_nocalib.SetMaximum(1.1)
 p_nocalib.GetYaxis().SetTitleOffset( 1.2 )
 p_nocalib.GetYaxis().SetTitle( "%s / %s_{truth}" % ( obs, obs ))
 
 p_nocalib.Draw()
 p_calib.Draw( "same" )
-p_dnncalib.Draw( "same" )
+#p_dnncalib.Draw( "same" )
+
+l = TLine()
+l.SetLineStyle( kDashed )
+l.DrawLine( 0., 1., 1000, 1. ) 
+
+gPad.SetLogx()
+p_nocalib.GetXaxis().SetMoreLogLabels()
+p_nocalib.GetXaxis().SetNoExponent()
 
 # make legend
 lparams = {

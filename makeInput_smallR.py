@@ -10,7 +10,14 @@ R = 40
 infilename = sys.argv[1]
 infile = TFile.Open( infilename )
 
-outfilename = "csv/" + infilename.split("/")[-1].replace( ".root", ".csv" )
+
+dts    = infilename.split("/")[-2]
+usr    = dts.split('.')[1]
+dsid   = dts.split('.')[2]
+sname  = dts.split('.')[3]
+deriv  = dts.split('.')[4]
+
+outfilename = "csv/" + infilename.split("/")[-1].replace( "output.root", "%s.%s.%s.csv" % (dsid,sname,deriv)  )
 outfile = open( outfilename, "wt" )
 csvwriter = csv.writer( outfile )
 
