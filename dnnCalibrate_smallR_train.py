@@ -10,7 +10,7 @@ from keras.optimizers import SGD
 from keras.callbacks import EarlyStopping
 
 from sklearn.preprocessing import PolynomialFeatures
-from sklearn.preprocessing import StandardScaler, RobustScaler
+from sklearn.preprocessing import StandardScaler, RobustScaler, MinMaxScaler
 
 from sklearn.model_selection import cross_val_score
 
@@ -99,15 +99,16 @@ def create_dnn_eta_E():
 def create_dnn_pT_eta_E():
   model = Sequential()
 
-  model.add( Dense(3, input_dim=n_inputs, init='normal', activation='linear'))
+  model.add( Dense( 10*n_inputs, input_dim=n_inputs, init='normal', activation='linear'))
+#  model.add(Dropout(0.2))
 
-  model.add( Dense(300, init='normal', activation='relu'))
+  model.add( Dense( 200, init='normal', activation='linear'))
+#  model.add(Dropout(0.2))
 
-  model.add( Dense(300, init='normal', activation='relu'))
+  model.add( Dense( 10, init='normal', activation='linear'))
+#  model.add(Dropout(0.2))
 
-  model.add( Dense(200, init='normal', activation='relu'))
-
-  model.add( Dense(3, init='normal') )
+  model.add( Dense( 3, init='normal', activation='linear' ) )
 
   model.compile( loss='mean_squared_error', optimizer='adam' )
 
@@ -121,8 +122,9 @@ calibration = "pT_eta_E"
 #calibration = "pT_E"
 #calibration = "eta"
 
-scaler = StandardScaler() 
-#scaler = RobustScaler()
+#scaler = StandardScaler() 
+scaler = RobustScaler()
+#scaler = MinMaxScaler()
 poly = PolynomialFeatures(2)
 
 training_filename = sys.argv[1]
@@ -148,14 +150,7 @@ print nocalib_train
 print "INFO: training truth:"
 print truth_train
 
-#nocalib_train = poly.fit_transform( nocalib_train )
-#nocalib_train = scaler.fit_transform( nocalib_train )
-
-with open( "scaler.smallR.%s.pkl" % calibration, "wb" ) as file_scaler:
-  pickle.dump( scaler, file_scaler )
-  pickle.dump( poly,   file_scaler )
-
-x_train = nocalib_train
+X_train = nocalib_train
 
 if calibration == "pT":
    y_train = truth_train[:,0]
@@ -170,10 +165,13 @@ if calibration == "pT_E":
 if calibration == "pT_eta_E":
    y_train = truth_train[:,:3] #(pT,eta,E)
 
-n_inputs = len( x_train[0] )
+#X_train = poly.fit_transform( nocalib_train )
+#X_train = scaler.fit_transform( X_train )
 
-print "INFO: x train (transformed):"
-print nocalib_train
+n_inputs = len( X_train[0] )
+
+print "INFO: X train:"
+print X_train
 print "INFO: y train:"
 print y_train
 
@@ -204,9 +202,9 @@ print "INFO: Training.."
 
 #dnn.fit( nocalib_train, E_truth_train )
 #dnn.fit( nocalib_train, E_truth_train, callbacks=[early_stopping] )
-dnn.fit( x_train, y_train )
+dnn.fit( X_train, y_train )
 
-score_train = dnn.score( x_train, y_train )
+score_train = dnn.score( X_train, y_train )
 #print
 print "Score (dnn,training):", score_train
 
@@ -216,3 +214,8 @@ print "INFO: model summary:"
 dnn.model.summary()
 
 print "INFO: saved file", "dnn.smallR.%s.h5" % calibration
+
+with open( "scaler.smallR.%s.pkl" % calibration, "wb" ) as file_scaler:
+  pickle.dump( scaler, file_scaler )
+  pickle.dump( poly,   file_scaler )
+print "INFO: scaler saved in file", "scaler.smallR.%s.pkl" % calibration

@@ -11,7 +11,7 @@ from keras.layers import Dropout
 from keras.wrappers.scikit_learn import KerasRegressor
 from keras.optimizers import SGD
 
-from sklearn.preprocessing import StandardScaler, RobustScaler
+from sklearn.preprocessing import StandardScaler, RobustScaler, MinMaxScaler
 from sklearn.model_selection import cross_val_score
 
 import cPickle as pickle
@@ -102,7 +102,7 @@ print "INFO: test X:"
 print X_test
 
 #nocalib_test = poly.transform( nocalib_test )
-#nocalib_test = scaler.transform( nocalib_test )
+#X_test = scaler.transform( X_test )
 
 predict_dnn = dnn.predict( X_test )
 
@@ -179,7 +179,7 @@ for ipt in range(len(ptbins)):
 
 
 # transform back to usual representation
-#nocalib_test = scaler.inverse_transform( nocalib_test )
+#X_test = scaler.inverse_transform( X_test )
 
 # Print out example
 for i in range(10):
@@ -215,7 +215,12 @@ for i in range( n_entries ):
   eta_dnncalib = -100000
   E_dnncalib   = -1
 
-  if calibration   == "eta":
+  if calibration == "pT_eta_E":
+     pT_dnncalib   = predict_dnn[i][0]
+     eta_dnncalib  = predict_dnn[i][1]
+     E_dnncalib    = predict_dnn[i][2]
+
+  elif calibration   == "eta":
      eta_dnncalib  = predict_dnn[i]
 
      theta = 2. * atan( exp( -eta_dnncalib ) )
@@ -225,10 +230,6 @@ for i in range( n_entries ):
      eta_dnncalib = v_nocalib.Eta()
      E_dnncalib   = v_nocalib.E()
 
-  elif calibration == "pT_eta_E":
-     pT_dnncalib   = predict_dnn[i][0]
-     eta_dnncalib  = predict_dnn[i][1]
-     E_dnncalib    = predict_dnn[i][2]
   elif calibration == "pT_E":
      pT_dnncalib   = predict_dnn[i][0]
      eta_dnncalib  = eta_nocalib
