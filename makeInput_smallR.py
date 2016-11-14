@@ -31,6 +31,7 @@ for ientry in range(nentries):
 
   eventNumber = tree.eventNumber
   weight   = tree.weight_mc * tree.weight_pileup #* tree.weight_jvt
+  mu       = tree.mu
 
   jets_reco_calib   = []
   jets_reco_nocalib = []
@@ -84,18 +85,66 @@ for ientry in range(nentries):
   # Dump only good jets
   jets_n = len( jets_reco_calib )
   for i in range( jets_n ):
-    j_reco_calib   = jets_reco_calib[i]
-    j_reco_nocalib = jets_reco_nocalib[i]
+    j_calib   = jets_reco_calib[i]
+
+    j_calib_pt  = j_calib.Pt()/GeV
+    j_calib_eta = j_calib.Eta()
+    j_calib_E   = j_calib.E()/GeV
+    j_calib_M   = j_calib.M()/GeV
+    j_calib_P   = j_calib.P()/GeV
+
+    j_calib_P2  = j_calib_P*j_calib_P
+    j_calib_E2  = j_calib_E*j_calib_E
+    j_calib_M2  = j_calib_M*j_calib_M
+
+    j_nocalib = jets_reco_nocalib[i]
+
+    j_nocalib_pt  = j_nocalib.Pt()/GeV
+    j_nocalib_eta = j_nocalib.Eta()
+    j_nocalib_E   = j_nocalib.E()/GeV
+    j_nocalib_M   = j_nocalib.M()/GeV
+    j_nocalib_P   = j_nocalib.P()/GeV
+
+    j_nocalib_P2  = j_nocalib_P*j_nocalib_P
+    j_nocalib_E2  = j_nocalib_E*j_nocalib_E
+    j_nocalib_M2  = j_nocalib_M*j_nocalib_M
+
     j_truth        = jets_truth[i]
 
+    j_truth_pt  = j_truth.Pt()/GeV
+    j_truth_eta = j_truth.Eta()
+    j_truth_E   = j_truth.E()/GeV
+    j_truth_M   = j_truth.M()/GeV
+    j_truth_P   = j_truth.P()/GeV
 
+    j_truth_P2  = j_truth_P*j_truth_P
+    j_truth_E2  = j_truth_E*j_truth_E
+    j_truth_M2  = j_truth_M*j_truth_M
+
+    
 ## Write (pT, eta, E, M )
     csvwriter.writerow( (
            "%i"    % eventNumber, \
-           "%4.1f" % weight, \
-           "%4.1f" % (j_reco_calib.Pt()/GeV),   "%3.2f" % j_reco_calib.Eta(),   "%4.1f" % (j_reco_calib.E()/GeV),  \
-           "%4.1f" % (j_reco_nocalib.Pt()/GeV), "%3.2f" % j_reco_nocalib.Eta(), "%4.1f" % (j_reco_nocalib.E()/GeV), \
-           "%4.1f" % (j_truth.Pt()/GeV),        "%3.2f" % j_truth.Eta(),        "%4.1f" % (j_truth.E()/GeV),        \
+           "%4.2f" % weight, \
+           "%4.2f" % mu, \
+
+           "%4.1f" % j_calib_pt, \
+           "%3.2f" % j_calib_eta, \
+           "%4.1f" % j_calib_E, \
+           "%4.1f" % j_calib_P, \
+           "%4.1f" % j_calib_M, \
+
+           "%4.1f" % j_nocalib_pt, \
+           "%3.2f" % j_nocalib_eta, \
+           "%4.1f" % j_nocalib_E, \
+           "%4.1f" % j_nocalib_P, \
+           "%4.1f" % j_nocalib_M, \
+
+           "%4.1f" % j_truth_pt, \
+           "%3.2f" % j_truth_eta, \
+           "%4.1f" % j_truth_E, \
+           "%4.1f" % j_truth_P, \
+           "%4.1f" % j_truth_M, \
            ) )
 
 outfile.close()

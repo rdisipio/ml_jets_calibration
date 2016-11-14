@@ -2,6 +2,8 @@
 
 import os, sys
 
+from math import atan, exp, log, pow
+
 from keras.models import Sequential
 from keras.models import load_model
 from keras.layers import Dense
@@ -59,11 +61,13 @@ def FindPtBin( pt ):
 
 testing_filename  = sys.argv[1]
 
-#calibration = "pT_eta_E"
-calibration = "pT_E"
+calibration = "pT_eta_E"
+#calibration = "pT_E"
+#calibration = "eta"
 
 with open( "scaler.smallR.%s.pkl" % calibration, "rb" ) as file_scaler:
   scaler = pickle.load( file_scaler )
+  poly   = pickle.load( file_scaler )
 #scaler = StandardScaler() 
 #scaler = RobustScaler()
 
@@ -81,10 +85,12 @@ print dnn.model.summary()
 testing_dataset = pd.read_csv( testing_filename, delimiter="," ).values
 
 # load four-vectors in (pT,eta,phi,E) representation
-event_test   = testing_dataset[:,:2]
-calib_test   = testing_dataset[:,2:5]
-nocalib_test = testing_dataset[:,5:8]
-truth_test   = testing_dataset[:,8:]
+event_test   = testing_dataset[:,:3]
+calib_test   = testing_dataset[:,3:8]
+nocalib_test = testing_dataset[:,8:13]
+truth_test   = testing_dataset[:,13:]
+
+X_test = nocalib_test
 
 print "INFO: testing calib:"
 print calib_test
@@ -92,19 +98,20 @@ print "INFO: testing nocalib:"
 print nocalib_test
 print "INFO: testing truth:"
 print truth_test
+print "INFO: test X:" 
+print X_test
 
+#nocalib_test = poly.transform( nocalib_test )
 #nocalib_test = scaler.transform( nocalib_test )
-#E_truth_test = truth_test[:,2]
-#truth_test = truth_test[:,1:]
 
-predict_dnn = dnn.predict( nocalib_test )
+predict_dnn = dnn.predict( X_test )
 
-#score_test = dnn.score( nocalib_test, E_truth_test )
+#score_test = dnn.model.score( nocalib_test, truth_test )
 #print
 #print "INFO: Score (dnn, testing) =", score_test
 
 # Create ROOT output file
-outfilename = testing_filename.split("/")[-1].replace("output.csv","") +  model_filename.replace(".h5",".histograms.root")
+outfilename = testing_filename.split("/")[-1].replace("csv","") +  model_filename.replace(".h5",".histograms.root")
 print "INFO: output file:", outfilename
 outfile = TFile.Open( outfilename, "RECREATE" )
 
@@ -176,27 +183,49 @@ for ipt in range(len(ptbins)):
 
 # Print out example
 for i in range(10):
-  print "  ", nocalib_test[i], "----> E(dnn) =", predict_dnn[i], ":: Truth =", truth_test[i], " :: Event w =", event_test[i][1]
+  print "  ", X_test[i], "----> DNN =", predict_dnn[i], ":: Truth =", truth_test[i] 
+#, " :: Event info =", event_test[i]
 
-n_entries = len(truth_test)
+n_entries = len( truth_test )
 print "INFO: looping over %i entries" % n_entries
 for i in range( n_entries ):
   w = event_test[i][1]
 
   pT_truth   = truth_test[i][0]
+  eta_truth  = truth_test[i][1]
+  E_truth    = truth_test[i][2]
+  v_truth = TLorentzVector()
+  v_truth.SetPtEtaPhiE( pT_truth, eta_truth, 0., E_truth )
+
   pT_calib   = calib_test[i][0]
-  pT_nocalib = nocalib_test[i][0]
+  eta_calib  = calib_test[i][1]
+  E_calib    = calib_test[i][2]
+  foo = calib_test[i][2]
+  v_calib = TLorentzVector()
+  v_calib.SetPtEtaPhiE( pT_calib, eta_calib, 0., foo )
 
-  eta_truth     = truth_test[i][1]
-  eta_calib     = calib_test[i][1]
-  eta_nocalib   = nocalib_test[i][1]
+  pT_nocalib  = nocalib_test[i][0]
+  eta_nocalib = nocalib_test[i][1]
+  E_nocalib   = nocalib_test[i][2]
+  #print pT_nocalib, eta_nocalib, E_nocalib
+  v_nocalib = TLorentzVector()
+  v_nocalib.SetPtEtaPhiE( pT_nocalib, eta_nocalib, 0., E_nocalib )  
 
-  E_truth   = truth_test[i][2]
-  E_calib   = calib_test[i][2]
-  E_nocalib = nocalib_test[i][2]
-#  E_dnncalib     = predict_dnn[i]
+  pT_dnncalib  = -1
+  eta_dnncalib = -100000
+  E_dnncalib   = -1
 
-  if calibration == "pT_eta_E":
+  if calibration   == "eta":
+     eta_dnncalib  = predict_dnn[i]
+
+     theta = 2. * atan( exp( -eta_dnncalib ) )
+     v_nocalib.SetTheta( theta )
+
+     pT_dnncalib  = v_nocalib.Pt()
+     eta_dnncalib = v_nocalib.Eta()
+     E_dnncalib   = v_nocalib.E()
+
+  elif calibration == "pT_eta_E":
      pT_dnncalib   = predict_dnn[i][0]
      eta_dnncalib  = predict_dnn[i][1]
      E_dnncalib    = predict_dnn[i][2]
@@ -212,18 +241,20 @@ for i in range( n_entries ):
      pT_dnncalib   = pT_nocalib
      eta_dnncalib  = predict_dnn[i][0]
      E_dnncalib    = predict_dnn[i][1]
- 
-  h_pT_calib.Fill(    pT_truth, pT_calib )
-  h_pT_nocalib.Fill(  pT_truth, pT_nocalib )
-  h_pT_dnncalib.Fill( pT_truth, pT_dnncalib ) 
+  else:
+     print "Unknown calibration scheme", calibration 
 
-  h_eta_calib.Fill(    abs(eta_truth), abs(eta_calib) )
-  h_eta_nocalib.Fill(  abs(eta_truth), abs(eta_nocalib) )
-  h_eta_dnncalib.Fill( abs(eta_truth), abs(eta_dnncalib) )
+  h_pT_calib.Fill(    pT_truth, pT_calib, w )
+  h_pT_nocalib.Fill(  pT_truth, pT_nocalib, w )
+  h_pT_dnncalib.Fill( pT_truth, pT_dnncalib, w ) 
 
-  h_E_calib.Fill(    E_truth, E_calib )
-  h_E_nocalib.Fill(  E_truth, E_nocalib )
-  h_E_dnncalib.Fill( E_truth, E_dnncalib )
+  h_eta_calib.Fill(    abs(eta_truth), abs(eta_calib), w )
+  h_eta_nocalib.Fill(  abs(eta_truth), abs(eta_nocalib), w )
+  h_eta_dnncalib.Fill( abs(eta_truth), abs(eta_dnncalib), w )
+
+  h_E_calib.Fill(    E_truth, E_calib, w )
+  h_E_nocalib.Fill(  E_truth, E_nocalib, w )
+  h_E_dnncalib.Fill( E_truth, E_dnncalib, w )
 
   pT_response_nocalib  = pT_nocalib  / pT_truth if pT_truth > 0. else -1.
   pT_response_calib    = pT_calib    / pT_truth if pT_truth > 0. else -1.
@@ -238,7 +269,7 @@ for i in range( n_entries ):
   h_pT_response_dnncalib.Fill( pT_dnncalib, pT_response_dnncalib, w )
 
   # fill the same, but divided into eta bins
-  ieta = FindEtaBin( abs(eta_calib) )
+  ieta = FindEtaBin( abs(eta_nocalib) )
 
   histograms['pT_response_nocalib_etabin_%i'%ieta].Fill(  pT_truth, pT_response_nocalib, w )
   histograms['pT_response_calib_etabin_%i'%ieta].Fill(    pT_truth, pT_response_calib, w )
