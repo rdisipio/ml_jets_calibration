@@ -61,8 +61,9 @@ def FindPtBin( pt ):
 
 testing_filename  = sys.argv[1]
 
-calibration = "pT_eta_E"
-#calibration = "pT_E"
+#calibration = "pT_eta_E"
+calibration = "pT_E"
+#calibration = "eta_E"
 #calibration = "eta"
 
 with open( "scaler.smallR.%s.pkl" % calibration, "rb" ) as file_scaler:
@@ -102,7 +103,7 @@ print "INFO: test X:"
 print X_test
 
 #nocalib_test = poly.transform( nocalib_test )
-#X_test = scaler.transform( X_test )
+X_test = scaler.transform( X_test )
 
 predict_dnn = dnn.predict( X_test )
 
@@ -179,7 +180,7 @@ for ipt in range(len(ptbins)):
 
 
 # transform back to usual representation
-#X_test = scaler.inverse_transform( X_test )
+X_test = scaler.inverse_transform( X_test )
 
 # Print out example
 for i in range(10):
@@ -234,10 +235,12 @@ for i in range( n_entries ):
      pT_dnncalib   = predict_dnn[i][0]
      eta_dnncalib  = eta_nocalib
      E_dnncalib    = predict_dnn[i][1]
+
   elif calibration == "pT_eta":
      pT_dnncalib   = predict_dnn[i][0]
      eta_dnncalib  = predict_dnn[i][1]
      E_dnncalib    = E_nocalib
+
   elif calibration == "eta_E":
      pT_dnncalib   = pT_nocalib
      eta_dnncalib  = predict_dnn[i][0]

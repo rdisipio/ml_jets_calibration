@@ -10,7 +10,8 @@ SetAtlasStyle()
 
 gROOT.SetBatch(1)
 
-etaregions = [ [0.0,0.1], [0.1,0.2], [0.2,0.3], [0.3,0.4], [0.4,0.5], [0.5,0.6], [0.6,0.7], [0.7,0.8], [0.8,0.9], [0.9,1.0], [1.0,2.5] ]
+etabins = [ [0.0,0.1], [0.1,0.2], [0.2,0.3], [0.3,0.4], [0.4,0.5], [0.5,0.6], [0.6,0.7], [0.7,0.8], [0.8,0.9], [0.9,1.0], [1.0,2.5] ]
+ptbins  = [ [0., 20.], [ 20., 30.], [30., 40], [40., 60.], [60., 80.], [80., 100.], [100., 400.], [400., 1200.], [1200.,3000.] ] 
 
 def SetTH1FStyle( h, color = kBlack, linewidth = 1, fillcolor = 0, fillstyle = 0, markerstyle = 21, markersize = 1.3, linestyle=kSolid ):
     '''Set the style with a long list of parameters'''
@@ -60,9 +61,9 @@ obs = "E"
 if len( sys.argv) > 1:
   obs = sys.argv[1]
 
-etaregion = "0"
+region = "etabin_0"
 if len( sys.argv) > 2:
-  etaregion = sys.argv[2]
+  region = sys.argv[2]
 
 infilename = "dnn.root"
 if len( sys.argv ) > 3:
@@ -70,9 +71,9 @@ if len( sys.argv ) > 3:
 infile = TFile.Open( infilename )
 
 
-h_calib    = infile.Get( "%s_response_calib_etabin_%s" % ( obs, etaregion ) )
-h_nocalib  = infile.Get( "%s_response_nocalib_etabin_%s" % ( obs, etaregion ) )
-h_dnncalib = infile.Get( "%s_response_dnncalib_etabin_%s" % ( obs, etaregion ) )
+h_calib    = infile.Get( "%s_response_calib_%s" % ( obs, region ) )
+h_nocalib  = infile.Get( "%s_response_nocalib_%s" % ( obs, region ) )
+h_dnncalib = infile.Get( "%s_response_dnncalib_%s" % ( obs, region ) )
 
 #h_calib.Rebin2D(2,2)
 #h_nocalib.Rebin2D(2,2)
@@ -128,10 +129,20 @@ txt.SetNDC()
 txt.SetTextSize(0.03)
 txt.SetTextFont(42)
 
-etamin = etaregions[int(etaregion)][0]
-etamax = etaregions[int(etaregion)][1]
 txt.DrawLatex( 0.65, 0.90, "C/A R=0.4 jets p_{T} > 20 GeV" )
-txt.DrawLatex( 0.65, 0.85, "%2.1f #leq |#eta| #leq %2.1f" % (etamin,etamax) )
 
-imgname = "img/ca4_%s_response_etaregion%s.png" % ( obs, etaregion )
+if region.split("_")[0] == "etabin":
+  ibin = int( region.split("_")[1] )
+  etamin = etabins[ibin][0]
+  etamax = etabins[ibin][1]
+  txt.DrawLatex( 0.65, 0.85, "%2.1f #leq |#eta| #leq %2.1f" % (etamin,etamax) )
+elif region.split("_")[0] == "ptbin":
+  ibin = int( region.split("_")[1] )
+  ptmin = ptbins[ibin][0]
+  ptmax = ptbins[ibin][1]
+  txt.DrawLatex( 0.65, 0.85, "%4i < p_{T} < %4i" % ( ptmin, ptmax ) )
+else:
+  pass
+
+imgname = "img/ca4_%s_response_%s.png" % ( obs, region )
 c.SaveAs( imgname )

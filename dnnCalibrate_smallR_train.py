@@ -58,18 +58,36 @@ def create_dnn_eta():
 def create_dnn_pT_E():
   # relu, sigmoid, tanh, linear
   model = Sequential()
-  model.add( Dense(3, input_dim=n_inputs, init='normal', activation='linear'))
+
+#  model.add( Dense(20*n_inputs, input_dim=n_inputs, init='normal', activation='linear'))
+#  model.add( Dense(100, init='normal', activation='linear'))
+
+#  model.add( Dense( 2*n_inputs, input_dim=n_inputs ) )
+#  model.add( Dense( 400 ) )
+#  model.add( Dense( 200, activation='relu'  ) )
+#  model.add( Dense( 100, activation='relu'  ) )
+#  model.add( Dense(2) )
+
+  model.add( Dense( 2*n_inputs, input_dim=n_inputs ) )
+  model.add( Dense( 60, activation='relu' ) )
+  model.add( Dense(2) )
+
+#  model.add( Dense( 100 ) )
+
+#  model.add(Dropout(0.2))
 
 #  model.add( Dense(300, init='normal', activation='linear'))
 #  model.add(Dropout(0.2))
 
-  model.add( Dense(600, init='normal', activation='linear'))
-  model.add(Dropout(0.2))
+#  model.add( Dense(200, init='normal', activation='linear'))
+#  model.add(Dropout(0.2))
 
-  model.add( Dense(1200, init='normal', activation='linear'))
-  model.add(Dropout(0.2))
+#  model.add( Dense(1200, init='normal', activation='linear'))
+#  model.add(Dropout(0.2))
 
-  model.add( Dense(2, init='normal') )
+#  model.add( Dense( 100, init='normal', activation='linear'))
+
+#  model.add( Dense(2, init='normal') )
 
   model.compile( loss='mean_squared_error', optimizer='adam' )
   return model
@@ -80,18 +98,16 @@ def create_dnn_pT_E():
 def create_dnn_eta_E():
   # relu, sigmoid, tanh, linear
   model = Sequential()
-  model.add( Dense(3, input_dim=n_inputs, init='normal', activation='linear'))
-  model.add( Dense(300, init='normal', activation='linear'))
-  model.add(Dropout(0.2))
-  model.add( Dense(300, init='normal', activation='linear'))
-  model.add(Dropout(0.2))
-  model.add( Dense(300, init='normal', activation='linear'))
-  model.add(Dropout(0.2))
-  model.add( Dense(300, init='normal', activation='linear'))
-  model.add(Dropout(0.2))
+	
+  model.add( Dense( 10*n_inputs, input_dim=n_inputs, init='normal', activation='linear'))
+
+  model.add( Dense( 100, init='normal', activation='linear'))
+#  model.add(Dropout(0.2))
+
   model.add( Dense(2, init='normal') )
+
   model.compile( loss='mean_squared_error', optimizer='adam' )
-#  model.compile( loss='mean_squared_error', optimizer='rmsprop' )
+
   return model
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -118,13 +134,14 @@ def create_dnn_pT_eta_E():
 #################
 
 
-calibration = "pT_eta_E"
-#calibration = "pT_E"
+#calibration = "pT_eta_E"
+calibration = "pT_E"
+#calibration = "eta_E"
 #calibration = "eta"
 
 #scaler = StandardScaler() 
-scaler = RobustScaler()
-#scaler = MinMaxScaler()
+#scaler = RobustScaler()
+scaler = MinMaxScaler()
 poly = PolynomialFeatures(2)
 
 training_filename = sys.argv[1]
@@ -152,6 +169,10 @@ print truth_train
 
 X_train = nocalib_train
 
+#X_train = poly.fit_transform( nocalib_train )
+X_train     = scaler.fit_transform( X_train )
+#truth_train = scaler.transform( truth_train )
+
 if calibration == "pT":
    y_train = truth_train[:,0]
 if calibration == "eta":
@@ -159,14 +180,12 @@ if calibration == "eta":
 if calibration == "E":
    y_train = truth_train[:,2]
 if calibration == "eta_E":
-   y_train = truth_train[:,1:] #(eta,E)
+   y_train = truth_train[:,1:3] #(eta,E)
 if calibration == "pT_E":
-   y_train = truth_train[:,::2] #(pT,E)
+   y_train = truth_train[:,::2][:,:2] #(pT,E)
 if calibration == "pT_eta_E":
    y_train = truth_train[:,:3] #(pT,eta,E)
 
-#X_train = poly.fit_transform( nocalib_train )
-#X_train = scaler.fit_transform( X_train )
 
 n_inputs = len( X_train[0] )
 
@@ -176,7 +195,7 @@ print "INFO: y train:"
 print y_train
 
 if calibration == "pT_E":
-   dnn = KerasRegressor( build_fn=create_dnn_pT_E, nb_epoch=5, batch_size=5000, verbose=1 )
+   dnn = KerasRegressor( build_fn=create_dnn_pT_E, nb_epoch=10, batch_size=2000, verbose=1 )
 elif calibration == "eta_E":
    dnn = KerasRegressor( build_fn=create_dnn_eta_E, nb_epoch=5, batch_size=5000, verbose=1 )
 elif calibration == "pT_eta_E":
@@ -212,7 +231,6 @@ dnn.model.save( "dnn.smallR.%s.h5" % calibration )
 
 print "INFO: model summary:"
 dnn.model.summary()
-
 print "INFO: saved file", "dnn.smallR.%s.h5" % calibration
 
 with open( "scaler.smallR.%s.pkl" % calibration, "wb" ) as file_scaler:
