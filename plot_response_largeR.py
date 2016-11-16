@@ -10,8 +10,6 @@ SetAtlasStyle()
 
 gROOT.SetBatch(1)
 
-etaregions = [ [0.0,0.1], [0.1,0.2], [0.2,0.3], [0.3,0.4], [0.4,0.5], [0.5,0.6], [0.6,0.7], [0.7,0.8], [0.8,0.9], [0.9,1.0], [1.0,2.5] ]
-
 def SetTH1FStyle( h, color = kBlack, linewidth = 1, fillcolor = 0, fillstyle = 0, markerstyle = 21, markersize = 1.3, linestyle=kSolid ):
     '''Set the style with a long list of parameters'''
     
@@ -60,19 +58,15 @@ obs = "M"
 if len( sys.argv) > 1:
   obs = sys.argv[1]
 
-etaregion = "0"
-if len( sys.argv) > 2:
-  etaregion = sys.argv[2]
-
 infilename = "dnn.largeR.pT_M.histograms.root"
-if len( sys.argv ) > 3:
-   infilename = sys.argv[3]
+if len( sys.argv ) > 2:
+   infilename = sys.argv[2]
 infile = TFile.Open( infilename )
 
 
-h_calib    = infile.Get( "%s_response_calib_%s" % ( obs, etaregion ) )
-h_nocalib  = infile.Get( "%s_response_nocalib_%s" % ( obs, etaregion ) )
-h_dnncalib = infile.Get( "%s_response_dnncalib_%s" % ( obs, etaregion ) )
+h_calib    = infile.Get( "%s_response_calib" % ( obs ) )
+h_nocalib  = infile.Get( "%s_response_nocalib" % ( obs ) )
+h_dnncalib = infile.Get( "%s_response_dnncalib" % ( obs ) )
 
 #h_calib.Rebin2D(2,2)
 #h_nocalib.Rebin2D(2,2)
@@ -83,8 +77,8 @@ p_nocalib  = h_nocalib.ProfileX()
 p_dnncalib = h_dnncalib.ProfileX()
 
 SetTH1FStyle( p_calib,    color=kRed, linewidth=2, markerstyle=22 )
-SetTH1FStyle( p_nocalib,  color=kBlack, linewidth=2, markerstyle=21 )
-SetTH1FStyle( p_dnncalib, color=kGreen-2, linewidth=2, markerstyle=26 )
+SetTH1FStyle( p_nocalib,  color=kBlack, linewidth=2, markerstyle=20 )
+SetTH1FStyle( p_dnncalib, color=kGreen-2, linewidth=2, markerstyle=23 )
 
 c = TCanvas( "C", "C", 1000, 800 )
 
@@ -97,6 +91,15 @@ p_nocalib.Draw()
 p_calib.Draw( "same" )
 p_dnncalib.Draw( "same" )
 
+l = TLine()
+l.SetLineStyle( kDashed )
+l.DrawLine( p_nocalib.GetXaxis().GetXmin(), 1., p_nocalib.GetXaxis().GetXmax(), 1. )
+l2 = TLine()
+l2.SetLineStyle( kDashed )
+l2.SetLineColor( kGreen-2 )
+l2.DrawLine( p_nocalib.GetXaxis().GetXmin(), 1.01, p_nocalib.GetXaxis().GetXmax(), 1.01 )
+l2.DrawLine( p_nocalib.GetXaxis().GetXmin(), 0.99, p_nocalib.GetXaxis().GetXmax(), 0.99 )
+
 # make legend
 lparams = {
   'xoffset' : 0.65,
@@ -108,7 +111,7 @@ leg = MakeLegend( lparams )
 leg.SetTextFont( 42 )
 leg.SetTextSize( 0.03 )
 leg.AddEntry( p_nocalib,   "Uncalibrated", "lp" )
-leg.AddEntry( p_calib,     "Calibrated",   "lp" )
+leg.AddEntry( p_calib,     "ATLAS-Calibrated",   "lp" )
 leg.AddEntry( p_dnncalib,  "DNN-calibrated", "lp" )
 leg.Draw()
 leg.SetY1( leg.GetY1() - lparams['height'] * leg.GetNRows() )
@@ -120,10 +123,7 @@ txt.SetNDC()
 txt.SetTextSize(0.03)
 txt.SetTextFont(42)
 
-etamin = etaregions[int(etaregion)][0]
-etamax = etaregions[int(etaregion)][1]
-txt.DrawLatex( 0.65, 0.90, "Anti-k_{T} R=1.0 jets p_{T} > 300 GeV" )
-txt.DrawLatex( 0.65, 0.85, "%2.1f #leq |#eta| #leq %2.1f" % (etamin,etamax) )
-
-imgname = "img/akt10_%s_response_etaregion%s.png" % ( obs, etaregion )
+txt.DrawLatex( 0.65, 0.90, "Anti-k_{T} R=1.0 jets p_{T} > 250 GeV" )
+txt.DrawLatex( 0.65, 0.85, "|#eta| < 2.0" )
+imgname = "img/%s_response.png" % ( obs )
 c.SaveAs( imgname )

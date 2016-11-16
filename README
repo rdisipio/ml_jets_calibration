@@ -24,6 +24,12 @@ This will create a file called dnn.pT_E.h5 (containig the DNN) and a file called
 This will create a ROOT file called user.mlisovyi.9682259._000005.dnn.pT_E.histograms.root
 Repeat this for all csv files (maybe use GNU parallel)
 
+# On full datasets
+cat user.tnitta.csv.dat | parallel -j 8 ./dnnCalibrate_largeR_predict.py {}
+
+hadd -f user.tnitta.all.DAOD_JETM8_p2666.dnn.largeR.pT_M.histograms.root user.tnitta.36102*DAOD_JETM8_p2666.dnn.largeR.pT_M.histograms.root
+
+
 * Make plots
 The output file of the previous step contains response histograms for several eta regions indexed as 0...N
 
@@ -37,6 +43,20 @@ mkdir img
 ./plot_response.py E 1
 ...
 
+###############
+# large-R jets
+
+./plot_response_largeR.py E  user.tnitta.all.DAOD_JETM8_p2666.dnn.largeR.pT_M.histograms.root
+./plot_response_largeR.py pT user.tnitta.all.DAOD_JETM8_p2666.dnn.largeR.pT_M.histograms.root
+./plot_response_largeR.py M  user.tnitta.all.DAOD_JETM8_p2666.dnn.largeR.pT_M.histograms.root
+
+seq 0 4 | parallel -j 8 ./plot_response.py pT ptbin_{} user.tnitta.all.DAOD_JETM8_p2666.dnn.largeR.pT_M.histograms.root
+seq 0 4 | parallel -j 8 ./plot_response.py E  ptbin_{} user.tnitta.all.DAOD_JETM8_p2666.dnn.largeR.pT_M.histograms.root
+seq 0 4 | parallel -j 8 ./plot_response.py M  ptbin_{} user.tnitta.all.DAOD_JETM8_p2666.dnn.largeR.pT_M.histograms.root
+
+seq 0 11 | parallel -j 8 ./plot_response.py pT etabin_{} user.tnitta.all.DAOD_JETM8_p2666.dnn.largeR.pT_M.histograms.root
+seq 0 11 | parallel -j 8 ./plot_response.py E  etabin_{} user.tnitta.all.DAOD_JETM8_p2666.dnn.largeR.pT_M.histograms.root
+seq 0 11 | parallel -j 8 ./plot_response.py M  etabin_{} user.tnitta.all.DAOD_JETM8_p2666.dnn.largeR.pT_M.histograms.root
 
 ###################
 # do you need GPUs?

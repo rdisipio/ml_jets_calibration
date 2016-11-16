@@ -10,8 +10,13 @@ SetAtlasStyle()
 
 gROOT.SetBatch(1)
 
-etabins = [ [0.0,0.1], [0.1,0.2], [0.2,0.3], [0.3,0.4], [0.4,0.5], [0.5,0.6], [0.6,0.7], [0.7,0.8], [0.8,0.9], [0.9,1.0], [1.0,2.5] ]
-ptbins  = [ [0., 20.], [ 20., 30.], [30., 40], [40., 60.], [60., 80.], [80., 100.], [100., 400.], [400., 1200.], [1200.,3000.] ] 
+# small-R
+#etabins = [ [0.0,0.1], [0.1,0.2], [0.2,0.3], [0.3,0.4], [0.4,0.5], [0.5,0.6], [0.6,0.7], [0.7,0.8], [0.8,0.9], [0.9,1.0], [1.0,2.5] ]
+#ptbins  = [ [0., 20.], [ 20., 30.], [30., 40], [40., 60.], [60., 80.], [80., 100.], [100., 400.], [400., 1200.], [1200.,3000.] ] 
+
+# large-R
+etabins = [ [0.0,0.1], [0.1,0.2], [0.2,0.3], [0.3,0.4], [0.4,0.5], [0.5,0.6], [0.6,0.7], [0.7,0.8], [0.8,0.9], [0.9,1.0], [1.0,1.5],[1.5,5.0] ]
+ptbins  = [ [0.,400.], [400.,500.], [500.,600.], [600.,800.], [800.,1000.], [1000,2500.] ]
 
 def SetTH1FStyle( h, color = kBlack, linewidth = 1, fillcolor = 0, fillstyle = 0, markerstyle = 21, markersize = 1.3, linestyle=kSolid ):
     '''Set the style with a long list of parameters'''
@@ -85,12 +90,13 @@ p_dnncalib = h_dnncalib.ProfileX()
 
 SetTH1FStyle( p_calib,    color=kRed, linewidth=2, markerstyle=22 )
 SetTH1FStyle( p_nocalib,  color=kBlack, linewidth=2, markerstyle=20 )
-SetTH1FStyle( p_dnncalib, color=kGreen-2, linewidth=2, markerstyle=23 )
+SetTH1FStyle( p_dnncalib, color=kCyan+2, linewidth=2, markerstyle=23 )
 
 c = TCanvas( "C", "C", 1000, 800 )
 
 p_nocalib.SetMinimum(0.9)
 p_nocalib.SetMaximum(1.1)
+if obs == "M": p_nocalib.SetMaximum(1.3)
 p_nocalib.GetYaxis().SetTitleOffset( 1.2 )
 p_nocalib.GetYaxis().SetTitle( "%s / %s_{truth}" % ( obs, obs ))
 
@@ -100,7 +106,13 @@ p_dnncalib.Draw( "same" )
 
 l = TLine()
 l.SetLineStyle( kDashed )
-l.DrawLine( 0., 1., 1000, 1. ) 
+l.DrawLine( p_nocalib.GetXaxis().GetXmin(), 1., p_nocalib.GetXaxis().GetXmax(), 1. ) 
+l2 = TLine()
+l2.SetLineStyle( kDashed )
+l2.SetLineColor( kGreen-2 )
+l2.DrawLine( p_nocalib.GetXaxis().GetXmin(), 1.01, p_nocalib.GetXaxis().GetXmax(), 1.01 )
+l2.DrawLine( p_nocalib.GetXaxis().GetXmin(), 0.99, p_nocalib.GetXaxis().GetXmax(), 0.99 )
+
 
 #gPad.SetLogx()
 #p_nocalib.GetXaxis().SetMoreLogLabels()
@@ -144,5 +156,5 @@ elif region.split("_")[0] == "ptbin":
 else:
   pass
 
-imgname = "img/ca4_%s_response_%s.png" % ( obs, region )
+imgname = "img/%s_response_%s.png" % ( obs, region )
 c.SaveAs( imgname )
