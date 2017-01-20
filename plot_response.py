@@ -141,7 +141,8 @@ txt.SetNDC()
 txt.SetTextSize(0.03)
 txt.SetTextFont(42)
 
-txt.DrawLatex( 0.65, 0.90, "C/A R=0.4 jets p_{T} > 20 GeV" )
+#txt.DrawLatex( 0.65, 0.90, "C/A R=0.4 jets p_{T} > 20 GeV" )
+txt.DrawLatex( 0.65, 0.90, "Anti-k_{T} R=1.0 jets p_{T} > 250 GeV" )
 
 if region.split("_")[0] == "etabin":
   ibin = int( region.split("_")[1] )
