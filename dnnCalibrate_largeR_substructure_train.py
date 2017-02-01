@@ -35,34 +35,39 @@ early_stopping = EarlyStopping(monitor='val_loss', patience=2)
 
 def create_model():
    model_pT = Sequential()
-   model_pT.add( Dense( n_input_pT, input_dim=n_input_pT ) )
-   model_pT.add( Dense(50, activation='linear'))
-   model_pT.add( Dense(20, activation='linear'))
-   model_pT.add( Dense(1, activation='linear'))
+   model_pT.add( Dense( 10*n_input_pT, input_dim=n_input_pT ) )
+   model_pT.add( Dense( 100, activation='tanh'))
+#   model_pT.add(Dropout(0.2))
+#   model_pT.add( Dense( 100, activation='tanh'))
+#   model_pT.add(Dropout(0.2))
+   model_pT.add( Dense(1) )
 
    model_eta = Sequential()
    model_eta.add( Dense( n_input_eta, input_dim=n_input_eta ) )
-   model_eta.add( Dense(50, activation='linear'))
-   model_eta.add( Dense(20, activation='linear'))
-   model_eta.add( Dense(1, activation='linear'))
+   model_eta.add( Dense(  100, activation='linear'))
+   model_eta.add( Dense(1) )
 
    model_E = Sequential()
-   model_E.add( Dense( n_input_E, input_dim=n_input_E ) )
-   model_E.add( Dense(50, activation='linear'))
-   model_E.add( Dense(20, activation='linear'))
-   model_E.add( Dense(1, activation='linear'))
-
+   model_E.add( Dense( 10*n_input_E, input_dim=n_input_E ) )
+   model_E.add( Dense( 100, activation='tanh'))
+#   model_E.add(Dropout(0.2))
+#   model_E.add( Dense( 100, activation='tanh'))
+#   model_E.add(Dropout(0.2))
+   model_E.add( Dense(1) )
+ 
    model_M = Sequential()
-   model_M.add( Dense( n_input_M, input_dim=n_input_M ) )
-   model_M.add( Dense(50, activation='linear'))
-   model_M.add( Dense(20, activation='linear'))
-   model_M.add( Dense(1, activation='linear'))
+   model_M.add( Dense( 10*n_input_M, input_dim=n_input_M ) )
+   model_M.add( Dense( 100, activation='tanh'))
+#   model_M.add(Dropout(0.2))
+   model_M.add( Dense( 100, activation='tanh'))
+#   model_M.add(Dropout(0.2))
+   model_M.add( Dense(1) )
 
    merged = Merge( [ model_pT, model_eta, model_E, model_M ], mode='concat' )
 
    model = Sequential()
    model.add(merged)
-   model.add( Dense( 4, activation='linear' ) )
+   model.add( Dense( 4 ) )
    model.compile( loss='mean_squared_error', optimizer='adam' )
 
    return model
@@ -86,8 +91,11 @@ header = [
 ]
 
 # Set up scalers
-scaler = MinMaxScaler()
-poly = PolynomialFeatures(2)
+scaler_pT  = MinMaxScaler()
+scaler_eta = MinMaxScaler()
+scaler_E   = MinMaxScaler()
+scaler_M   = MinMaxScaler() 
+#poly = PolynomialFeatures(2)
 
 # read in input file
 #training_dataset = pd.read_csv( training_filename, delimiter="," ).values
@@ -96,25 +104,39 @@ df_training = pd.read_csv( training_filename, delimiter=',', names=header )
 
 # transverse momentum
 features_pT = [ "fjet1_nocalib_pt", "fjet1_nocalib_eta", "fjet1_nocalib_E", "fjet1_nocalib_P", "fjet1_nocalib_M",
-                "fjet1_D2", "fjet1_C2", "fjet1_Tau1", "fjet1_Tau2", "fjet1_Tau3", "fjet1_Split12", "fjet1_Split23", "fjet1_Split34" ] 
+ #               "fjet1_Nconstit", "fjet1_untrimNtrk500",
+ #               "mu", "fjet1_D2", "fjet1_C2", "fjet1_Tau1", "fjet1_Tau2", "fjet1_Tau3", "fjet1_Split12", "fjet1_Split23", "fjet1_Split34" 
+  ] 
 X_train_pT = df_training[features_pT].values
+X_train_pT = scaler_pT.fit_transform( X_train_pT )
 
 # (pseudo)rapidity
-features_eta = [ "fjet1_nocalib_pt", "fjet1_nocalib_eta", "fjet1_nocalib_E", "fjet1_nocalib_P", "fjet1_nocalib_M",
-                 "fjet1_D2", "fjet1_C2", "fjet1_Tau1", "fjet1_Tau2", "fjet1_Tau3", "fjet1_Split12", "fjet1_Split23", "fjet1_Split34" ]
+features_eta = [ "fjet1_nocalib_pt", "fjet1_nocalib_eta", "fjet1_nocalib_E",
+                 "mu", 
+ ]
 X_train_eta = df_training[features_eta].values
+X_train_eta = scaler_eta.fit_transform( X_train_eta )
 
 # energy
 features_E  = [ "fjet1_nocalib_pt", "fjet1_nocalib_eta", "fjet1_nocalib_E", "fjet1_nocalib_P", "fjet1_nocalib_M",
-                "fjet1_D2", "fjet1_C2", "fjet1_Tau1", "fjet1_Tau2", "fjet1_Tau3", "fjet1_Split12", "fjet1_Split23", "fjet1_Split34" ]
+ #               "fjet1_Nconstit", "fjet1_untrimNtrk500",
+ #               "mu", "fjet1_D2", "fjet1_C2", "fjet1_Tau1", "fjet1_Tau2", "fjet1_Tau3", "fjet1_Split12", "fjet1_Split23", "fjet1_Split34" 
+                 "fjet1_D2", "fjet1_C2"
+ ]
 X_train_E = df_training[features_E].values
+X_train_E = scaler_E.fit_transform( X_train_E )
 
 # mass
 features_M  = [ "fjet1_nocalib_pt", "fjet1_nocalib_eta", "fjet1_nocalib_E", "fjet1_nocalib_P", "fjet1_nocalib_M",
-                "fjet1_D2", "fjet1_C2", "fjet1_Tau1", "fjet1_Tau2", "fjet1_Tau3", "fjet1_Split12", "fjet1_Split23", "fjet1_Split34" ]
+                 "fjet1_Nconstit", "fjet1_untrimNtrk500",
+                 "mu", "fjet1_KtDR", "fjet1_Mu12", "fjet1_Angularity", "fjet1_Split12", "fjet1_Split23", "fjet1_Split34" ,
+                 "fjet1_Tau2", "fjet1_Tau3", "fjet1_Tau2_wta", "fjet1_Tau3_wta", "fjet1_Width"
+ ]
 X_train_M = df_training[features_M].values
+X_train_M = scaler_M.fit_transform( X_train_M )
 
-y_train = df_training[ [ "alpha_pt", "alpha_eta", "alpha_E", "alpha_M" ] ].values
+#y_train = df_training[ [ "alpha_pt", "alpha_eta", "alpha_E", "alpha_M" ] ].values
+y_train = df_training[ [ "fjet1_truth_pt", "fjet1_truth_eta", "fjet1_truth_E", "fjet1_truth_M" ] ].values
 
 n_input_pT  = len( features_pT )
 n_input_eta = len( features_eta )
@@ -126,9 +148,18 @@ print "INFO: N inputs eta:", n_input_eta
 print "INFO: N inputs E:  ", n_input_E
 print "INFO: N inputs M:  ", n_input_M
 
-dnn = KerasRegressor( build_fn=create_model, nb_epoch=50, batch_size=100, verbose=1 )
+dnn = KerasRegressor( build_fn=create_model, nb_epoch=200, batch_size=5000, verbose=1 )
 
 dnn.fit( [ X_train_pT, X_train_eta, X_train_E, X_train_M ], y_train )
 
 dnn.model.save( "dnn.largeR_substructure.h5" )
+
+with open( "scaler.largeR_substructure.pkl", "wb" ) as file_scaler:
+  pickle.dump( scaler_pT,  file_scaler )
+  pickle.dump( scaler_eta, file_scaler )
+  pickle.dump( scaler_E,   file_scaler )
+  pickle.dump( scaler_M,   file_scaler )
+
+#  pickle.dump( poly,   file_scaler )
+print "INFO: scaler saved in file", "scaler.largeR_substructure.pkl"
 

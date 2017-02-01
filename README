@@ -46,17 +46,19 @@ mkdir img
 ###############
 # large-R jets
 
-./plot_response_largeR.py E  user.tnitta.all.DAOD_JETM8_p2666.dnn.largeR.pT_M.histograms.root
-./plot_response_largeR.py pT user.tnitta.all.DAOD_JETM8_p2666.dnn.largeR.pT_M.histograms.root
-./plot_response_largeR.py M  user.tnitta.all.DAOD_JETM8_p2666.dnn.largeR.pT_M.histograms.root
+INPUTFILE=user.tnitta.akt10.dnn.largeR_substructure.histograms.root
 
-seq 0 4 | parallel -j 8 ./plot_response.py pT ptbin_{} user.tnitta.all.DAOD_JETM8_p2666.dnn.largeR.pT_M.histograms.root
-seq 0 4 | parallel -j 8 ./plot_response.py E  ptbin_{} user.tnitta.all.DAOD_JETM8_p2666.dnn.largeR.pT_M.histograms.root
-seq 0 4 | parallel -j 8 ./plot_response.py M  ptbin_{} user.tnitta.all.DAOD_JETM8_p2666.dnn.largeR.pT_M.histograms.root
+./plot_response_largeR.py E  ${INPUTFILE}
+./plot_response_largeR.py pT ${INPUTFILE}
+./plot_response_largeR.py M  ${INPUTFILE}
 
-seq 0 11 | parallel -j 8 ./plot_response.py pT etabin_{} user.tnitta.all.DAOD_JETM8_p2666.dnn.largeR.pT_M.histograms.root
-seq 0 11 | parallel -j 8 ./plot_response.py E  etabin_{} user.tnitta.all.DAOD_JETM8_p2666.dnn.largeR.pT_M.histograms.root
-seq 0 11 | parallel -j 8 ./plot_response.py M  etabin_{} user.tnitta.all.DAOD_JETM8_p2666.dnn.largeR.pT_M.histograms.root
+seq 0 4 | parallel -j 8 ./plot_response.py pT ptbin_{} ${INPUTFILE}
+seq 0 4 | parallel -j 8 ./plot_response.py E  ptbin_{} ${INPUTFILE}
+seq 0 4 | parallel -j 8 ./plot_response.py M  ptbin_{} ${INPUTFILE}
+
+seq 0 11 | parallel -j 8 ./plot_response.py pT etabin_{} ${INPUTFILE}
+seq 0 11 | parallel -j 8 ./plot_response.py E  etabin_{} ${INPUTFILE}
+seq 0 11 | parallel -j 8 ./plot_response.py M  etabin_{} ${INPUTFILE}
 
 ###################
 # do you need GPUs?
