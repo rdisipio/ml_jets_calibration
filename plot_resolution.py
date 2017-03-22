@@ -107,9 +107,11 @@ c = TCanvas( "C", "C", 1000, 800 )
 
 p_nocalib.SetMinimum(0.03)
 p_nocalib.SetMaximum(0.80)
+
 gPad.SetLogy()
 #gPad.SetLogx()
 gPad.SetGrid()
+p_nocalib.GetYaxis().SetMoreLogLabels() ; p_nocalib.GetYaxis().SetNoExponent()
 p_nocalib.GetYaxis().SetTitleOffset( 1.2 )
 #p_nocalib.GetYaxis().SetTitle( "(%s^{reco} - %s^{truth} ) / %s^{truth}" % ( obs, obs, obs ))
 p_nocalib.GetYaxis().SetTitle( "IQR68 / 2" )
