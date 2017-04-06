@@ -134,7 +134,7 @@ Do you need GPUs?
 ssh gravity01
 source setup_machine_learning.sh 
 module load gcc/4.8.1
-module load cuda/6.5
+module load cuda/7.5
 
 THEANO_FLAGS=mode=FAST_RUN,device=gpu,floatX=float32 python ./dnnCalibrate_largeR_substructure_train.py csv/user.tnitta.akt10.csv 
 ```

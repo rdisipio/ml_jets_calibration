@@ -27,6 +27,7 @@ np.set_printoptions( precision=2, suppress=True )
 # change this to increase the number of eta slices
 etabins = [ [0.0,0.1], [0.1,0.2], [0.2,0.3], [0.3,0.4], [0.4,0.5], [0.5,0.6], [0.6,0.7], [0.7,0.8], [0.8,0.9], [0.9,1.0], [1.0,1.5],[1.5,5.0] ]
 ptbins  = [ [0.,400.], [400.,500.], [500.,600.], [600.,800.], [800.,1000.], [1000,2500.] ]
+massbins =  [ [30., 80.], [80., 120.], [120., 150.], [150.,200.], [200.,300.] ]
 
 #################
 
@@ -104,44 +105,53 @@ df_testing = pd.read_csv( testing_filename, delimiter=',', names=header )
 event_info = df_testing[ [ "weight" ] ].values
 
 # transverse momentum
-features_pT = [ "fjet1_nocalib_pt", "fjet1_nocalib_eta", "fjet1_nocalib_E", "fjet1_nocalib_P", "fjet1_nocalib_M"  ] 
+features_pT = [ "fjet1_nocalib_pt", "fjet1_nocalib_eta", "fjet1_nocalib_E", "fjet1_nocalib_P", "fjet1_nocalib_M",
+ #               "fjet1_Nconstit", "fjet1_untrimNtrk500",
+ #               "mu", "fjet1_D2", "fjet1_C2", "fjet1_Tau1", "fjet1_Tau2", "fjet1_Tau3", "fjet1_Split12", "fjet1_Split23", "fjet1_Split34" 
+  ]
 X_test_pT = df_testing[features_pT].values
-X_test_pT = scaler_pT.transform( X_test_pT )
+X_test_pT = scaler_pT.fit_transform( X_test_pT )
 
 # (pseudo)rapidity
-features_eta = [ "fjet1_nocalib_pt", "fjet1_nocalib_eta", "fjet1_nocalib_E",
-                 "mu", 
- ]
+features_eta = [ "fjet1_nocalib_pt", "fjet1_nocalib_eta", "fjet1_nocalib_E", "fjet1_nocalib_P", "fjet1_nocalib_M" ]
+#features_eta = [ "fjet1_nocalib_pt", "fjet1_nocalib_eta" ]
 X_test_eta = df_testing[features_eta].values
-X_test_eta = scaler_eta.transform( X_test_eta )
+X_test_eta = scaler_eta.fit_transform( X_test_eta )
 
 # energy
 features_E  = [ "fjet1_nocalib_pt", "fjet1_nocalib_eta", "fjet1_nocalib_E", "fjet1_nocalib_P", "fjet1_nocalib_M",
  #               "fjet1_Nconstit", "fjet1_untrimNtrk500",
  #               "mu", "fjet1_D2", "fjet1_C2", "fjet1_Tau1", "fjet1_Tau2", "fjet1_Tau3", "fjet1_Split12", "fjet1_Split23", "fjet1_Split34" 
-                 "fjet1_D2", "fjet1_C2"
+#                 "fjet1_D2", "fjet1_C2"
  ]
 X_test_E = df_testing[features_E].values
-X_test_E = scaler_E.transform( X_test_E )
-
+X_test_E = scaler_E.fit_transform( X_test_E )
 
 # mass
-features_M  = [ "fjet1_nocalib_pt", "fjet1_nocalib_eta", "fjet1_nocalib_E", "fjet1_nocalib_P", "fjet1_nocalib_M",
-                 "fjet1_Nconstit", "fjet1_untrimNtrk500",
-                 "mu", "fjet1_KtDR", "fjet1_Mu12", "fjet1_Angularity", "fjet1_Split12", "fjet1_Split23", "fjet1_Split34" ,
-                 "fjet1_Tau2", "fjet1_Tau3", "fjet1_Tau2_wta", "fjet1_Tau3_wta", "fjet1_Width"
+features_M  = [
+#     "fjet1_nocalib_pt", "fjet1_nocalib_eta", "fjet1_nocalib_E", "fjet1_nocalib_P", "fjet1_nocalib_M",
+  "fjet1_nocalib_eta", "fjet1_nocalib_P", "fjet1_nocalib_M",
+      "fjet1_Nconstit", #"fjet1_untrimNtrk500",
+   #              "fjet1_D2", "fjet1_C2",
+   #              "mu", "fjet1_KtDR", "fjet1_Mu12", "fjet1_Angularity", 
+   #               "fjet1_Split12", "fjet1_Split23", "fjet1_Split34",
+                  "fjet1_Tau2_wta", "fjet1_Tau3_wta", #"fjet1_Width",
  ]
 X_test_M = df_testing[features_M].values
-X_test_M = scaler_M.transform( X_test_M )
+X_test_M = scaler_M.fit_transform( X_test_M )
 
-X_features_nocalib = [ "fjet1_nocalib_pt", "fjet1_nocalib_eta", "fjet1_nocalib_E", "fjet1_nocalib_M" ]
+
+#X_features_nocalib = [ "fjet1_nocalib_pt", "fjet1_nocalib_eta", "fjet1_nocalib_E", "fjet1_nocalib_M" ]
+X_features_nocalib = [ "fjet1_nocalib_pt", "fjet1_nocalib_E", "fjet1_nocalib_M", "fjet1_nocalib_eta" ]
 y_nocalib = df_testing[X_features_nocalib].values
 
-features_truth = [ "fjet1_truth_pt", "fjet1_truth_eta", "fjet1_truth_E", "fjet1_truth_M" ]
-y_truth = df_testing[features_truth].values
+#X_features_truth = [ "fjet1_truth_pt", "fjet1_truth_eta", "fjet1_truth_E", "fjet1_truth_M" ]
+X_features_truth = [ "fjet1_truth_pt", "fjet1_truth_E", "fjet1_truth_M", "fjet1_truth_eta" ]
+y_truth = df_testing[X_features_truth].values
 
-features_calib = [ "fjet1_calib_pt", "fjet1_calib_eta", "fjet1_calib_E", "fjet1_calib_M" ]
-y_calib = df_testing[features_calib].values
+#X_features_calib = [ "fjet1_calib_pt", "fjet1_calib_eta", "fjet1_calib_E", "fjet1_calib_M" ]
+X_features_calib = [ "fjet1_calib_pt", "fjet1_calib_E", "fjet1_calib_M", "fjet1_calib_eta" ]
+y_calib = df_testing[X_features_calib].values
 
 #print "INFO: testing calib:"
 #print calib_test
@@ -155,12 +165,18 @@ y_calib = df_testing[features_calib].values
 #y_nocalib = poly.transform( y_nocalib )
 #X_test = scaler.transform( X_test )
 
-y_dnncalib = dnn.predict( [ X_test_pT, X_test_eta, X_test_E, X_test_M ] )
+#y_dnncalib = dnn.predict( [ X_test_pT, X_test_eta, X_test_E, X_test_M ] )
+y_dnncalib = dnn.predict( [ X_test_pT, X_test_E, X_test_M, X_test_eta ] )
+
+#res = dnn.score( [ X_test_pT, X_test_eta, X_test_E, X_test_M ], y_dnncalib )
+#print "Score(testing):", res
 
 # Create ROOT output file
 outfilename = testing_filename.split("/")[-1].replace("csv","") +  model_filename.replace(".h5",".histograms.root")
 print "INFO: output file:", outfilename
 outfile = TFile.Open( outfilename, "RECREATE" )
+
+#tree = TNtuple( "nominal", "nominal", "
 
 h_pT_nocalib  = TH2F( "pT_nocalib_vs_truth", "non-calib vs truth-level;truth-level jet p_{T} [GeV];Reco-level non-calib jet p_{T} [GeV]", 100, 200., 1200., 100, 200., 1200. )
 h_pT_calib    = TH2F( "pT_calib_vs_truth", "calib vs truth-level;truth-level jet p_{T} [GeV];Reco-level calib jet p_{T} [GeV]", 100, 200., 1200., 100, 200., 1200. )
@@ -194,6 +210,11 @@ h_E_response_dnncalib = TH2F( "E_response_dnncalib", "E response dnn-calib jets;
 h_M_response_calib    = TH2F( "M_response_calib",    "M response calib jets;truth-level jet M [GeV];M^{reco}/M^{truth}",    30, 0., 300., 20, 0., 2. )
 h_M_response_nocalib  = TH2F( "M_response_nocalib",  "M response non-calib jets;truth-level jet M [GeV];M^{reco}/M^{truth}",30, 0., 300., 20, 0., 2. )
 h_M_response_dnncalib = TH2F( "M_response_dnncalib", "M response dnn-calib jets;truth-level jet M [GeV];M^{reco}/M^{truth}",30, 0., 300., 20, 0., 2. )
+
+h_eta_response_calib    = TH2F( "eta_response_calib",    "#eta response calib jets;truth-level jet #eta;#eta^{reco}/#eta^{truth}", 15, -2.5, 2.5, 20, 0., 2. )
+h_eta_response_nocalib  = TH2F( "eta_response_nocalib",  "#eta response non-calib jets;truth-level jet #eta;#eta^{reco}/#eta^{truth}", 15, -2.5, 2.5, 20, 0., 2. )
+h_eta_response_dnncalib = TH2F( "eta_response_dnncalib", "#eta response dnn-calib jets;truth-level jet #eta;#eta^{reco}/#eta^{truth}", 15, -2.5, 2.5, 20, 0., 2. )
+
 
 histograms = {}
 for ieta in range(len(etabins)):
@@ -265,33 +286,40 @@ print "INFO: looping over %i entries" % n_entries
 for i in range( n_entries ):
   w = event_info[i][0]
 
+#  pT_truth   = y_truth[i][0]
+#  eta_truth  = y_truth[i][1]
+#  M_truth    = y_truth[i][3]
   pT_truth   = y_truth[i][0]
-  eta_truth  = y_truth[i][1]
-  E_truth    = y_truth[i][2]
-  M_truth    = y_truth[i][3]
+  E_truth    = y_truth[i][1]
+  M_truth    = y_truth[i][2]
+  eta_truth  = y_truth[i][3]
   v_truth = TLorentzVector()
   v_truth.SetPtEtaPhiM( pT_truth, eta_truth, 0., M_truth )
+#  E_truth = v_truth.E()
 
   pT_calib   = y_calib[i][0]
-  eta_calib  = y_calib[i][1]
-  E_calib    = y_calib[i][2]
-  M_calib    = y_calib[i][3]
+  E_calib    = y_calib[i][1]
+  M_calib    = y_calib[i][2]
+  eta_calib  = y_calib[i][3]
   v_calib = TLorentzVector()
   v_calib.SetPtEtaPhiM( pT_calib, eta_calib, 0., M_calib )
+#  E_calib = v_calib.E()
 
   pT_nocalib  = y_nocalib[i][0]
-  eta_nocalib = y_nocalib[i][1]
-  E_nocalib   = y_nocalib[i][2]
-  M_nocalib   = y_nocalib[i][3]
+  E_nocalib   = y_nocalib[i][1]
+  M_nocalib   = y_nocalib[i][2]
+  eta_nocalib = y_nocalib[i][3]
   v_nocalib = TLorentzVector()
   v_nocalib.SetPtEtaPhiM( pT_nocalib, eta_nocalib, 0., M_nocalib )  
+#  E_nocalib = v_nocalib.E()
 
   pT_dnncalib  = y_dnncalib[i][0]
-  eta_dnncalib = y_dnncalib[i][1]
-  E_dnncalib   = y_dnncalib[i][2]
-  M_dnncalib   = y_dnncalib[i][3]
+  E_dnncalib   = y_dnncalib[i][1]
+  M_dnncalib   = y_dnncalib[i][2]
+  eta_dnncalib = y_dnncalib[i][3]
   v_dnncalib = TLorentzVector() 
   v_dnncalib.SetPtEtaPhiM( pT_dnncalib, eta_dnncalib, 0., M_dnncalib )
+#  E_dnncalib = v_dnncalib.E()
 
   # Now fill histograms
 
@@ -319,6 +347,10 @@ for i in range( n_entries ):
   E_response_calib    = E_calib    / E_truth if E_truth > 0. else -1.
   E_response_dnncalib = E_dnncalib / E_truth if E_truth > 0. else -1.
 
+  eta_response_nocalib  = eta_nocalib/ eta_truth if not eta_truth == 0. else -1000.
+  eta_response_calib    = eta_calib/ eta_truth if not eta_truth == 0. else -1000.
+  eta_response_dnncalib = eta_dnncalib/ eta_truth if not eta_truth == 0. else -1000.
+
   M_response_nocalib  = M_nocalib  / M_truth if M_truth > 0. else -1.
   M_response_calib    = M_calib    / M_truth if M_truth > 0. else -1.
   M_response_dnncalib = M_dnncalib / M_truth if M_truth > 0. else -1.
@@ -330,6 +362,10 @@ for i in range( n_entries ):
   h_E_response_nocalib.Fill(  E_nocalib,  E_response_nocalib, w )
   h_E_response_calib.Fill(    E_calib,    E_response_calib, w )
   h_E_response_dnncalib.Fill( E_dnncalib, E_response_dnncalib, w )
+
+  h_eta_response_nocalib.Fill(  eta_nocalib,  eta_response_nocalib, w )
+  h_eta_response_calib.Fill(    eta_calib,    eta_response_calib, w )
+  h_eta_response_dnncalib.Fill( eta_dnncalib, eta_response_dnncalib, w )
 
   h_M_response_nocalib.Fill(  M_nocalib,  M_response_nocalib, w )
   h_M_response_calib.Fill(    M_calib,    M_response_calib, w )
