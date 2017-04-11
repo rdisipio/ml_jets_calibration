@@ -2,15 +2,15 @@
 
 import os, sys
 
-from keras.models import Sequential
+from models import *
 
-from keras.layers import Merge
-from keras.layers import Dense, Activation
-from keras.layers import Lambda
-from keras.layers import Dropout
-from keras.layers.advanced_activations import ELU
-
-from keras.wrappers.scikit_learn import KerasRegressor
+#from keras.models import Sequential
+#from keras.layers import Merge
+#from keras.layers import Dense, Activation
+#from keras.layers import Lambda
+#from keras.layers import Dropout
+#from keras.layers.advanced_activations import ELU
+#from keras.wrappers.scikit_learn import KerasRegressor
 
 from keras.optimizers import SGD
 
@@ -117,6 +117,25 @@ def create_model():
 
 #################
 
+def create_model_all():
+  model_all = Sequential()
+
+  model_all.add( Dense( 500, input_dim=n_input_all ) )
+  model_all.add( ELU() )
+
+  model_all.add( Dense(100) )
+  model_all.add( ELU() )
+
+  model_all.add( Dense(4) )
+#  model_all.add( ELU() )
+
+  model_all.compile( loss='mean_squared_error', optimizer='adam' )
+
+  return model_all
+
+#################
+
+
 training_filename = sys.argv[1]
 
 # Sana's
@@ -138,10 +157,23 @@ scaler_pT  = MinMaxScaler()
 scaler_eta = MinMaxScaler()
 scaler_E   = MinMaxScaler()
 scaler_M   = MinMaxScaler() 
+scaler_all = MinMaxScaler()
 #poly = PolynomialFeatures(2)
 
 # read in input file
 df_training = pd.read_csv( training_filename, delimiter=',', names=header )
+
+features_all = [ 
+ "jet_nocalib_Pt", "jet_nocalib_Eta", "jet_nocalib_E", "jet_nocalib_P", "jet_nocalib_M",
+ "jet_Tau1_wta", "jet_Tau2_wta", "jet_Tau3_wta", 
+# "jet_Tau1_wta", "jet_Tau2_wta", "jet_Tau3_wta", "jet_Tau21_wta", "jet_Tau32_wta",
+# "jet_Nconstit",
+ "jet_D2", "jet_C2",
+# "jet_Angularity", "jet_Aplanarity", "jet_PlanarFlow", "jet_Sphericity",
+ "jet_Width",
+]
+X_train_all = df_training[features_all].values
+X_train_all = scaler_all.fit_transform( X_train_all )
 
 # transverse momentum
 features_pT = [
@@ -153,6 +185,8 @@ X_train_pT = scaler_pT.fit_transform( X_train_pT )
 # (pseudo)rapidity
 features_eta = [
  "jet_nocalib_Pt", "jet_nocalib_Eta", "jet_nocalib_E", "jet_nocalib_P", "jet_nocalib_M",
+ "jet_Nconstit",
+ "jet_Width",
 ]
 X_train_eta = df_training[features_eta].values
 X_train_eta = scaler_eta.fit_transform( X_train_eta )
@@ -160,6 +194,7 @@ X_train_eta = scaler_eta.fit_transform( X_train_eta )
 # energy
 features_E  = [ 
  "jet_nocalib_Pt", "jet_nocalib_Eta", "jet_nocalib_E", "jet_nocalib_P", "jet_nocalib_M",
+ "jet_D2", "jet_C2",
  ]
 X_train_E = df_training[features_E].values
 X_train_E = scaler_E.fit_transform( X_train_E )
@@ -167,27 +202,36 @@ X_train_E = scaler_E.fit_transform( X_train_E )
 # mass
 features_M  = [ 
  "jet_nocalib_Pt", "jet_nocalib_Eta", "jet_nocalib_E", "jet_nocalib_P", "jet_nocalib_M",
+ "jet_Nconstit",
+ "jet_D2", "jet_C2",
+ "jet_Width",
  ]
 X_train_M = df_training[features_M].values
 X_train_M = scaler_M.fit_transform( X_train_M )
 
 y_train = df_training[ [ "jet_truth_Pt", "jet_truth_Eta", "jet_truth_E", "jet_truth_M" ] ].values
+#y_train = df_training[ [ "jet_truth_Pt", "jet_truth_E", "jet_truth_M" ] ].values
 
+n_input_all = len( features_all )
 n_input_pT  = len( features_pT )
 n_input_eta = len( features_eta )
 n_input_E   = len( features_E )
 n_input_M   = len( features_M )
 
+print "INFO: N inputs all:", n_input_all
 print "INFO: N inputs pT: ", n_input_pT
 print "INFO: N inputs eta:", n_input_eta
 print "INFO: N inputs E:  ", n_input_E
 print "INFO: N inputs M:  ", n_input_M
 
-dnn = KerasRegressor( build_fn=create_model, nb_epoch=20, batch_size=1000, verbose=1 )
+#dnn = KerasRegressor( build_fn=create_model, nb_epoch=20, batch_size=1000, verbose=1 )
+#history = dnn.fit( [ X_train_pT, X_train_eta, X_train_E, X_train_M ], y_train ) #, callbacks=callbacks_list )
+#res = dnn.score( [ X_train_pT, X_train_eta, X_train_E, X_train_M ], y_train )
+#print "Score(training):", res
 
-history = dnn.fit( [ X_train_pT, X_train_eta, X_train_E, X_train_M ], y_train ) #, callbacks=callbacks_list )
-
-res = dnn.score( [ X_train_pT, X_train_eta, X_train_E, X_train_M ], y_train )
+dnn = KerasRegressor( build_fn=create_model_all, nb_epoch=20, batch_size=100, verbose=1 )
+history = dnn.fit( X_train_all, y_train ) 
+res = dnn.score( X_train_all, y_train )
 print "Score(training):", res
 
 dnn.model.save( "dnn.largeR_substructure.sketabch.h5" )
@@ -197,6 +241,7 @@ with open( "scaler.largeR_substructure.pkl", "wb" ) as file_scaler:
   pickle.dump( scaler_eta, file_scaler )
   pickle.dump( scaler_E,   file_scaler )
   pickle.dump( scaler_M,   file_scaler )
+  pickle.dump( scaler_all, file_scaler )
 
 #  pickle.dump( poly,   file_scaler )
 print "INFO: scaler saved in file", "scaler.largeR_substructure.sketabch.pkl"
