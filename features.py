@@ -54,7 +54,8 @@ features_M  = [
  "jet_nocalib_Pt", "jet_nocalib_Eta", "jet_nocalib_E", "jet_nocalib_P", "jet_nocalib_M",
  "jet_Nconstit",
  "jet_D2", "jet_C2",
- "jet_Tau1_wta", "jet_Tau2_wta", "jet_Tau3_wta", "jet_Tau21_wta", "jet_Tau32_wta",
+ "jet_Tau1_wta", "jet_Tau2_wta", "jet_Tau3_wta",
+ "jet_Tau21_wta", "jet_Tau32_wta",
  "jet_Width",
  ]
 

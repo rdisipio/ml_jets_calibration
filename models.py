@@ -74,8 +74,6 @@ def create_model_M():
    model_M.add( Dense( 400, input_dim=n_input_M) )
    model_M.add( ELU() )
 
-#   model_M.add(Dropout(0.1))
-
    model_M.add( Dense( 200, input_dim=n_input_M) )
    model_M.add( ELU() )
 
