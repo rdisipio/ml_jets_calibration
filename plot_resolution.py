@@ -101,7 +101,7 @@ p_dnncalib = h_dnncalib_q84x
 
 SetTH1FStyle( p_calib,    color=kRed, linewidth=2, markerstyle=22 )
 SetTH1FStyle( p_nocalib,  color=kBlack, linewidth=2, markerstyle=20 )
-SetTH1FStyle( p_dnncalib, color=kGreen-2, linewidth=2, markerstyle=23 )
+SetTH1FStyle( p_dnncalib, color=kCyan+2, linewidth=2, markerstyle=23 )
 
 c = TCanvas( "C", "C", 1000, 800 )
 

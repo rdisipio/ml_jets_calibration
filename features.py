@@ -24,7 +24,7 @@ features_all = [
 
 # transverse momentum
 features_pT = [
- "jet_nocalib_Pt", "jet_nocalib_Eta", "jet_nocalib_E", "jet_nocalib_P", "jet_nocalib_M",
+ "jet_nocalib_Pt", "jet_nocalib_Eta", "jet_nocalib_E", "jet_nocalib_P", #"jet_nocalib_M",
 # "jet_D2", "jet_C2",
 # "jet_Tau1_wta", "jet_Tau2_wta", "jet_Tau3_wta",
 # "jet_Tau21_wta", "jet_Tau32_wta",
@@ -34,9 +34,10 @@ features_pT = [
 
 # (pseudo)rapidity
 features_eta = [
- "jet_nocalib_Pt", "jet_nocalib_Eta", "jet_nocalib_E", "jet_nocalib_P", "jet_nocalib_M",
- "jet_Nconstit",
- "jet_Width",
+ "jet_nocalib_Pt", "jet_nocalib_Eta", 
+# "jet_nocalib_Pt", "jet_nocalib_Eta", "jet_nocalib_E", "jet_nocalib_P", "jet_nocalib_M",
+# "jet_Nconstit",
+# "jet_Width",
 ]
 
 # energy
@@ -56,6 +57,14 @@ features_M  = [
  "jet_Tau1_wta", "jet_Tau2_wta", "jet_Tau3_wta", "jet_Tau21_wta", "jet_Tau32_wta",
  "jet_Width",
  ]
+
+#features_nocalib = [ "fjet1_nocalib_pt", "fjet1_nocalib_E", "fjet1_nocalib_M", "fjet1_nocalib_eta" ]
+#features_truth   = [ "fjet1_truth_pt", "fjet1_truth_E", "fjet1_truth_M", "fjet1_truth_eta" ]
+#features_calib   = [ "fjet1_calib_pt", "fjet1_calib_E", "fjet1_calib_M", "fjet1_calib_eta" ]
+
+y_features_nocalib = [ "jet_nocalib_Pt", "jet_nocalib_Eta", "jet_nocalib_E", "jet_nocalib_M" ]
+y_features_truth   = [ "jet_truth_Pt", "jet_truth_Eta", "jet_truth_E", "jet_truth_M" ] 
+y_features_calib   = [ "jet_calib_Pt", "jet_calib_Eta", "jet_calib_E", "jet_calib_M" ]
 
 n_input_all = len( features_all )
 n_input_pT  = len( features_pT )

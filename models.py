@@ -43,7 +43,7 @@ def create_model_pT():
 def create_model_eta():
    model_eta = Sequential()
 
-   model_eta.add( Dense( 300, input_dim=n_input_eta) )
+   model_eta.add( Dense( 20, input_dim=n_input_eta) )
 
    model_eta.add( Dense(1) )
 
@@ -107,6 +107,8 @@ def create_model_merged():
 #################
 
 def create_model_all():
+  '''Trains all variables at once'''
+
   model_all = Sequential()
 
   model_all.add( Dense( 500, input_dim=n_input_all ) )
@@ -145,11 +147,8 @@ def create_model_pT_E_M_parallel():
 def create_model_pT_E_single():
    model = Sequential()
 
-   model.add( Dense( 100, input_dim=n_input_pT ) )
+   model.add( Dense( 400, input_dim=n_input_pT ) )
    model.add( ELU() )
-
-#   model.add( Dense(100) )
-#   model.add( ELU() )
 
    model.add( Dense(2) )
    model.add( ELU() )

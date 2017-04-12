@@ -78,7 +78,7 @@ p_dnncalib = h_dnncalib.ProfileX()
 
 SetTH1FStyle( p_calib,    color=kRed, linewidth=2, markerstyle=22 )
 SetTH1FStyle( p_nocalib,  color=kBlack, linewidth=2, markerstyle=20 )
-SetTH1FStyle( p_dnncalib, color=kGreen-2, linewidth=2, markerstyle=23 )
+SetTH1FStyle( p_dnncalib, color=kCyan+2, linewidth=2, markerstyle=23 )
 
 c = TCanvas( "C", "C", 1000, 800 )
 
@@ -96,7 +96,7 @@ l.SetLineStyle( kDashed )
 l.DrawLine( p_nocalib.GetXaxis().GetXmin(), 1., p_nocalib.GetXaxis().GetXmax(), 1. )
 l2 = TLine()
 l2.SetLineStyle( kDashed )
-l2.SetLineColor( kGreen-2 )
+l2.SetLineColor( kCyan+2 )
 l2.DrawLine( p_nocalib.GetXaxis().GetXmin(), 1.01, p_nocalib.GetXaxis().GetXmax(), 1.01 )
 l2.DrawLine( p_nocalib.GetXaxis().GetXmin(), 0.99, p_nocalib.GetXaxis().GetXmax(), 0.99 )
 

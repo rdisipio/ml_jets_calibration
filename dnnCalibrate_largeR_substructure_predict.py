@@ -44,7 +44,8 @@ def FindEtaBin( eta ):
      if eta >= etamin and eta <= etamax:
        return ieta
      ieta += 1
-   print "WARNING: eta =", eta
+#   print "WARNING: eta =", eta
+   return ieta-1
 
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -59,114 +60,60 @@ def FindPtBin( pt ):
      if pt >= ptmin and pt <= ptmax:
        return i_pT
      i_pT += 1
-   print "WARNING: pt =", pt
+#   print "WARNING: pt =", pt
+   return i_pT - 1
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 calibration = "pT_eta_E_M"
 
-with open( "scaler.largeR_substructure.pkl", "rb" ) as file_scaler:
+#filename_scaler = "scaler.largeR_substructure.pkl"
+filename_scaler = "scaler.largeR_substructure.pkl"
+with open( filename_scaler, "rb" ) as file_scaler:
   scaler_pT  = pickle.load( file_scaler )
   scaler_eta = pickle.load( file_scaler )
   scaler_E   = pickle.load( file_scaler )
   scaler_M   = pickle.load( file_scaler )
+  scaler_all = pickle.load( file_scaler )
 
 testing_filename  = sys.argv[1]
 
-model_filename = "dnn.largeR_substructure.h5"
-
+model_filename = "model.merged.h5"
 dnn = load_model( model_filename )
 
 print "INFO: calibration scheme:", calibration
 print "INFO: model loaded from file", model_filename
 print dnn.model.summary()
 
-header = [
-  "eventNumber", "weight", "mu", "prw", 
-  "fjet1_truth_pt", "fjet1_truth_eta", "fjet1_truth_E", "fjet1_truth_P", "fjet1_truth_M",
-  "fjet1_nocalib_pt", "fjet1_nocalib_eta", "fjet1_nocalib_E", "fjet1_nocalib_P", "fjet1_nocalib_M",
-  "fjet1_Nconstit", "fjet1_untrimNtrk500", 
-  "fjet1_D2", "fjet1_C2", 
-  "fjet1_Tau1", "fjet1_Tau1_wta",
-  "fjet1_Tau2", "fjet1_Tau2_wta",
-  "fjet1_Tau3", "fjet1_Tau3_wta",
-  "fjet1_Angularity", "fjet1_Aplanarity", "fjet1_PlanarFlow", "fjet1_Sphericity", "fjet1_ThrustMaj", "fjet1_ThrustMin",
-  "fjet1_KtDR", "fjet1_Mu12", "fjet1_Width", "fjet1_Qw", "fjet1_Split12", "fjet1_Split23", "fjet1_Split34",
-  "fjet1_calib_pt", "fjet1_calib_eta", "fjet1_calib_E", "fjet1_calib_P", "fjet1_calib_M",
-  "alpha_pt", "alpha_eta", "alpha_E", "alpha_M"
-]
-
-#testing_dataset = np.loadtxt( testing_filename, delimiter=",")
-#testing_dataset = pd.read_csv( testing_filename, delimiter="," ).values
+from features import *
 
 df_testing = pd.read_csv( testing_filename, delimiter=',', names=header )
 #print df_testing
 
-event_info = df_testing[ [ "weight" ] ].values
+event_info = df_testing[ [ "jet_Weight" ] ].values
 
-# transverse momentum
-features_pT = [ "fjet1_nocalib_pt", "fjet1_nocalib_eta", "fjet1_nocalib_E", "fjet1_nocalib_P", "fjet1_nocalib_M",
- #               "fjet1_Nconstit", "fjet1_untrimNtrk500",
- #               "mu", "fjet1_D2", "fjet1_C2", "fjet1_Tau1", "fjet1_Tau2", "fjet1_Tau3", "fjet1_Split12", "fjet1_Split23", "fjet1_Split34" 
-  ]
 X_test_pT = df_testing[features_pT].values
 X_test_pT = scaler_pT.fit_transform( X_test_pT )
 
-# (pseudo)rapidity
-features_eta = [ "fjet1_nocalib_pt", "fjet1_nocalib_eta", "fjet1_nocalib_E", "fjet1_nocalib_P", "fjet1_nocalib_M" ]
-#features_eta = [ "fjet1_nocalib_pt", "fjet1_nocalib_eta" ]
 X_test_eta = df_testing[features_eta].values
 X_test_eta = scaler_eta.fit_transform( X_test_eta )
 
-# energy
-features_E  = [ "fjet1_nocalib_pt", "fjet1_nocalib_eta", "fjet1_nocalib_E", "fjet1_nocalib_P", "fjet1_nocalib_M",
- #               "fjet1_Nconstit", "fjet1_untrimNtrk500",
- #               "mu", "fjet1_D2", "fjet1_C2", "fjet1_Tau1", "fjet1_Tau2", "fjet1_Tau3", "fjet1_Split12", "fjet1_Split23", "fjet1_Split34" 
-#                 "fjet1_D2", "fjet1_C2"
- ]
 X_test_E = df_testing[features_E].values
 X_test_E = scaler_E.fit_transform( X_test_E )
 
-# mass
-features_M  = [
-#     "fjet1_nocalib_pt", "fjet1_nocalib_eta", "fjet1_nocalib_E", "fjet1_nocalib_P", "fjet1_nocalib_M",
-  "fjet1_nocalib_eta", "fjet1_nocalib_P", "fjet1_nocalib_M",
-      "fjet1_Nconstit", #"fjet1_untrimNtrk500",
-   #              "fjet1_D2", "fjet1_C2",
-   #              "mu", "fjet1_KtDR", "fjet1_Mu12", "fjet1_Angularity", 
-   #               "fjet1_Split12", "fjet1_Split23", "fjet1_Split34",
-                  "fjet1_Tau2_wta", "fjet1_Tau3_wta", #"fjet1_Width",
- ]
 X_test_M = df_testing[features_M].values
 X_test_M = scaler_M.fit_transform( X_test_M )
 
+# these should be standard
+y_nocalib = df_testing[y_features_nocalib].values
+y_truth   = df_testing[y_features_truth].values
+y_calib   = df_testing[y_features_calib].values
 
-#X_features_nocalib = [ "fjet1_nocalib_pt", "fjet1_nocalib_eta", "fjet1_nocalib_E", "fjet1_nocalib_M" ]
-X_features_nocalib = [ "fjet1_nocalib_pt", "fjet1_nocalib_E", "fjet1_nocalib_M", "fjet1_nocalib_eta" ]
-y_nocalib = df_testing[X_features_nocalib].values
-
-#X_features_truth = [ "fjet1_truth_pt", "fjet1_truth_eta", "fjet1_truth_E", "fjet1_truth_M" ]
-X_features_truth = [ "fjet1_truth_pt", "fjet1_truth_E", "fjet1_truth_M", "fjet1_truth_eta" ]
-y_truth = df_testing[X_features_truth].values
-
-#X_features_calib = [ "fjet1_calib_pt", "fjet1_calib_eta", "fjet1_calib_E", "fjet1_calib_M" ]
-X_features_calib = [ "fjet1_calib_pt", "fjet1_calib_E", "fjet1_calib_M", "fjet1_calib_eta" ]
-y_calib = df_testing[X_features_calib].values
-
-#print "INFO: testing calib:"
-#print calib_test
-#print "INFO: testing nocalib:"
-#print y_nocalib
-#print "INFO: testing truth:"
-#print y_truth
-#print "INFO: test X:"
-#print X_test
 
 #y_nocalib = poly.transform( y_nocalib )
 #X_test = scaler.transform( X_test )
 
-#y_dnncalib = dnn.predict( [ X_test_pT, X_test_eta, X_test_E, X_test_M ] )
-y_dnncalib = dnn.predict( [ X_test_pT, X_test_E, X_test_M, X_test_eta ] )
+y_dnncalib = dnn.predict( [ X_test_pT, X_test_eta, X_test_E, X_test_M ] )
 
 #res = dnn.score( [ X_test_pT, X_test_eta, X_test_E, X_test_M ], y_dnncalib )
 #print "Score(testing):", res
@@ -286,37 +233,34 @@ print "INFO: looping over %i entries" % n_entries
 for i in range( n_entries ):
   w = event_info[i][0]
 
-#  pT_truth   = y_truth[i][0]
-#  eta_truth  = y_truth[i][1]
-#  M_truth    = y_truth[i][3]
   pT_truth   = y_truth[i][0]
-  E_truth    = y_truth[i][1]
-  M_truth    = y_truth[i][2]
-  eta_truth  = y_truth[i][3]
+  eta_truth  = y_truth[i][1]
+  E_truth    = y_truth[i][2]
+  M_truth    = y_truth[i][3]
   v_truth = TLorentzVector()
   v_truth.SetPtEtaPhiM( pT_truth, eta_truth, 0., M_truth )
 #  E_truth = v_truth.E()
 
   pT_calib   = y_calib[i][0]
-  E_calib    = y_calib[i][1]
-  M_calib    = y_calib[i][2]
-  eta_calib  = y_calib[i][3]
+  eta_calib  = y_calib[i][1]
+  E_calib    = y_calib[i][2]
+  M_calib    = y_calib[i][3]
   v_calib = TLorentzVector()
   v_calib.SetPtEtaPhiM( pT_calib, eta_calib, 0., M_calib )
 #  E_calib = v_calib.E()
 
   pT_nocalib  = y_nocalib[i][0]
-  E_nocalib   = y_nocalib[i][1]
-  M_nocalib   = y_nocalib[i][2]
-  eta_nocalib = y_nocalib[i][3]
+  eta_nocalib = y_nocalib[i][1]
+  E_nocalib   = y_nocalib[i][2]
+  M_nocalib   = y_nocalib[i][3]
   v_nocalib = TLorentzVector()
   v_nocalib.SetPtEtaPhiM( pT_nocalib, eta_nocalib, 0., M_nocalib )  
 #  E_nocalib = v_nocalib.E()
 
   pT_dnncalib  = y_dnncalib[i][0]
-  E_dnncalib   = y_dnncalib[i][1]
-  M_dnncalib   = y_dnncalib[i][2]
-  eta_dnncalib = y_dnncalib[i][3]
+  eta_dnncalib = y_dnncalib[i][1]
+  E_dnncalib   = y_dnncalib[i][2]
+  M_dnncalib   = y_dnncalib[i][3]
   v_dnncalib = TLorentzVector() 
   v_dnncalib.SetPtEtaPhiM( pT_dnncalib, eta_dnncalib, 0., M_dnncalib )
 #  E_dnncalib = v_dnncalib.E()
