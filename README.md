@@ -11,6 +11,14 @@ Go to your work directory
 cd MLjetsCalib
 ```
 
+Quick Run
+=========
+```bash
+./dnnCalibrate_largeR_serial_train.py csv/user.sketabch.akt10.csv 
+./dnnCalibrate_largeR_substructure_predict.py csv/user.sketabch.akt10.csv
+./make_plots.sh 
+```
+
 Setup EOS
 =========
 
@@ -142,10 +150,4 @@ THEANO_FLAGS=mode=FAST_RUN,device=gpu,floatX=float32 python ./dnnCalibrate_large
 To submit to SciNet/Gravity GPU cluster
 ```
 qsub -l nodes=1:ppn=12:gpus=2,walltime=12:00:00 -q gravity -I
-```
-
-```
-./dnnCalibrate_largeR_serial_train.py csv/user.sketabch.akt10.csv 
-./dnnCalibrate_largeR_substructure_predict.py csv/user.sketabch.akt10.csv
-./make_plots.sh 
 ```
