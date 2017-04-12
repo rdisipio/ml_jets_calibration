@@ -19,6 +19,8 @@ Quick Run
 ./make_plots.sh 
 ```
 
+You may want to modify ```features.py``` and ```models.py``` .
+
 Setup EOS
 =========
 
