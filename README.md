@@ -16,7 +16,7 @@ Quick Run
 ```bash
 ./dnnCalibrate_largeR_serial_train.py csv/user.sketabch.akt10.csv 
 ./dnnCalibrate_largeR_substructure_predict.py csv/user.sketabch.akt10.csv
-./make_plots.sh 
+./make_plots.sh user.sketabch.akt10.model.merged.histograms.root
 ```
 
 You may want to modify ```features.py``` and ```models.py``` .

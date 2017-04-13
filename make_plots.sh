@@ -1,6 +1,7 @@
 #!/bin/bash
 
-INPUTFILE=user.tnitta.akt10.dnn.largeR_substructure.histograms.root
+INPUTFILE=user.sketabch.akt10.model.merged.histograms.root
+#user.tnitta.akt10.dnn.largeR_substructure.histograms.root
 [ ! -z $1 ] && INPUTFILE=$1
 
 ./plot_response_largeR.py E  ${INPUTFILE} &

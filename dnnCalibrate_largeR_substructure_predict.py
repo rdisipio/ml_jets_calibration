@@ -25,7 +25,7 @@ np.set_printoptions( precision=2, suppress=True )
 
 
 # change this to increase the number of eta slices
-etabins = [ [0.0,0.1], [0.1,0.2], [0.2,0.3], [0.3,0.4], [0.4,0.5], [0.5,0.6], [0.6,0.7], [0.7,0.8], [0.8,0.9], [0.9,1.0], [1.0,1.5],[1.5,5.0] ]
+etabins = [ [0.0,0.1], [0.1,0.2], [0.2,0.3], [0.3,0.4], [0.4,0.5], [0.5,0.6], [0.6,0.7], [0.7,0.8], [0.8,0.9], [0.9,1.0], [1.0,1.5],[1.5,2.0] ]
 ptbins  = [ [0.,400.], [400.,500.], [500.,600.], [600.,800.], [800.,1000.], [1000,2500.] ]
 massbins =  [ [30., 80.], [80., 120.], [120., 150.], [150.,200.], [200.,300.] ]
 
@@ -67,7 +67,6 @@ def FindPtBin( pt ):
 
 calibration = "pT_eta_E_M"
 
-#filename_scaler = "scaler.largeR_substructure.pkl"
 filename_scaler = "scaler.largeR_substructure.pkl"
 with open( filename_scaler, "rb" ) as file_scaler:
   scaler_pT  = pickle.load( file_scaler )

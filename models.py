@@ -33,9 +33,8 @@ def create_model_pT():
 
    model_pT.add( Dense( 100, input_dim=n_input_pT) )
    model_pT.add( ELU() )
-#   model_pT.add(Dropout(0.1))
 
-   model_pT.add( Dense(  1, init='uniform'))
+   model_pT.add( Dense(1))
    model_pT.add( ELU() )
 
    return model_pT
@@ -43,7 +42,9 @@ def create_model_pT():
 def create_model_eta():
    model_eta = Sequential()
 
-   model_eta.add( Dense( 20, input_dim=n_input_eta) )
+   model_eta.add( Dense( 50, input_dim=n_input_eta) )
+
+   model_eta.add( Dense( 10, activation='tanh' ) )
 
    model_eta.add( Dense(1) )
 
@@ -55,13 +56,11 @@ def create_model_E():
    model_E.add( Dense( 300, input_dim=n_input_E) )
    model_E.add( ELU() )
 
-   model_E.add( Dense( 200, input_dim=n_input_E) )
+   model_E.add( Dense( 200) )
    model_E.add( ELU() )
 
-   model_E.add( Dense( 100, input_dim=n_input_E) )
+   model_E.add( Dense( 100) )
    model_E.add( ELU() )
-
-#   model_E.add(Dropout(0.1))
 
    model_E.add( Dense(1) )
    model_E.add( ELU() )
@@ -71,13 +70,13 @@ def create_model_E():
 def create_model_M():
    model_M = Sequential()
 
-   model_M.add( Dense( 400, input_dim=n_input_M) )
+   model_M.add( Dense( 300, input_dim=n_input_M) )
    model_M.add( ELU() )
 
-   model_M.add( Dense( 200, input_dim=n_input_M) )
+   model_M.add( Dense( 200 ) )
    model_M.add( ELU() )
 
-   model_M.add( Dense( 100, input_dim=n_input_M) )
+   model_M.add( Dense( 100 ) )
    model_M.add( ELU() )
 
    model_M.add( Dense(1) )
