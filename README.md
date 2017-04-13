@@ -14,6 +14,13 @@ cd MLjetsCalib
 Quick Run
 =========
 ```bash
+
+mkdir csv
+mkdir csv/sketabch
+scp lxplus.cern.ch:/afs/cern.ch/work/s/sketabch/public/ML_input/*.txt ./csv/sketabch/
+
+./make_training_largeR_sketabch.sh # this creates csv/user.sketabch.akt10.csv with shuffled entries
+
 ./dnnCalibrate_largeR_serial_train.py csv/user.sketabch.akt10.csv 
 ./dnnCalibrate_largeR_substructure_predict.py csv/user.sketabch.akt10.csv
 ./make_plots.sh user.sketabch.akt10.model.merged.histograms.root
