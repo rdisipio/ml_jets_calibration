@@ -25,18 +25,21 @@ features_all = [
 # transverse momentum
 features_pT = [
  "jet_nocalib_Pt", "jet_nocalib_Eta", "jet_nocalib_E", "jet_nocalib_P", "jet_nocalib_M",
-# "jet_D2", "jet_C2",
-# "jet_Tau1_wta", "jet_Tau2_wta", "jet_Tau3_wta",
+ "jet_D2", "jet_C2",
+ "jet_Tau1_wta", "jet_Tau2_wta", "jet_Tau3_wta",
 # "jet_Tau21_wta", "jet_Tau32_wta",
-# "jet_Angularity", "jet_Aplanarity", "jet_PlanarFlow", "jet_Sphericity",
-# "jet_Width",
+ "jet_Angularity", "jet_Aplanarity", "jet_PlanarFlow", "jet_Sphericity",
+ "jet_Width",
   ]
 
 # (pseudo)rapidity
 features_eta = [
-# "jet_nocalib_Pt", "jet_nocalib_Eta", 
- "jet_nocalib_Pt", "jet_nocalib_Eta", "jet_nocalib_E", "jet_nocalib_P", "jet_nocalib_M",
+ "jet_nocalib_Pt", "jet_nocalib_Eta", "jet_nocalib_E", "jet_nocalib_P", #"jet_nocalib_M",
 # "jet_Nconstit",
+# "jet_D2", "jet_C2",
+# "jet_Tau1_wta", "jet_Tau2_wta", "jet_Tau3_wta",
+# "jet_Tau21_wta", "jet_Tau32_wta",
+# "jet_Angularity", "jet_Aplanarity", "jet_PlanarFlow", "jet_Sphericity",
 # "jet_Width",
 ]
 
@@ -44,19 +47,20 @@ features_eta = [
 features_E  = [
  "jet_nocalib_Pt", "jet_nocalib_Eta", "jet_nocalib_E", "jet_nocalib_P", "jet_nocalib_M",
  "jet_D2", "jet_C2",
-# "jet_Tau1_wta", "jet_Tau2_wta", "jet_Tau3_wta", "jet_Tau21_wta", "jet_Tau32_wta",
-# "jet_Angularity", "jet_Aplanarity", "jet_PlanarFlow", "jet_Sphericity",
-# "jet_Width",
+ "jet_Tau1_wta", "jet_Tau2_wta", "jet_Tau3_wta", 
+#"jet_Tau21_wta", "jet_Tau32_wta",
+ "jet_Angularity", "jet_Aplanarity", "jet_PlanarFlow", "jet_Sphericity",
+ "jet_Width",
  ]
 
 # mass
 features_M  = [
- "jet_nocalib_Pt", "jet_nocalib_Eta", "jet_nocalib_E", "jet_nocalib_P", "jet_nocalib_M",
+ "jet_nocalib_Pt", "jet_nocalib_Eta", "jet_nocalib_E", "jet_nocalib_P", #"jet_nocalib_M",
  "jet_Nconstit",
  "jet_D2", "jet_C2",
-# "jet_Tau1_wta", "jet_Tau2_wta", "jet_Tau3_wta",
- "jet_Tau21_wta", "jet_Tau32_wta",
- "jet_Aplanarity", "jet_PlanarFlow", "jet_Angularity",  "jet_Sphericity",
+ "jet_Tau1_wta", "jet_Tau2_wta", "jet_Tau3_wta",
+# "jet_Tau21_wta", "jet_Tau32_wta",
+# "jet_Aplanarity", "jet_PlanarFlow", "jet_Angularity",  "jet_Sphericity",
  "jet_Width",
  ]
 

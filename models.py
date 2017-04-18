@@ -41,10 +41,13 @@ def create_model_pT():
 
 def create_model_eta():
    model_eta = Sequential()
+ 
+   model_eta.add( Dense( 300, input_dim=n_input_eta) )
+   
+#   model_eta.add( Dense(200) )
 
-   model_eta.add( Dense( 50, input_dim=n_input_eta) )
-
-   model_eta.add( Dense( 10, activation='tanh' ) )
+#   model_eta.add( Dense(100) )
+#   model_eta.add( Dense( 10, activation='tanh' ) )
 
    model_eta.add( Dense(1) )
 
