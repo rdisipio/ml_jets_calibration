@@ -151,9 +151,9 @@ for ientry in range(nentries):
            "%.3f"  % jet_nocalib.m_over_pt, "%.3f" % jet_track.m_over_pt, "%.3f" % jet_nocalib.mTA, \
            "%i"    % jet_nocalib.Nconstit, "%.3f" % jet_nocalib.Nconstit_over_m, "%.3f" % jet_nocalib.width, "%.3f" % jet_nocalib.width_over_m, \
            # "%f" % jet_nocalib.ECF1, "%f" % jet_nocalib.ECF2, "%f" % jet_nocalib.ECF3, \
-           "%f"    % jet_nocalib.D2, jet_nocalib.C2, \
-           "%4.3f" % jet_nocalib.Tau1_wta, "%4.3f" % jet_nocalib.Tau2_wta, "%4.3f" % jet_nocalib.Tau3_wta, "%4.3f" % jet_nocalib.Tau21_wta, jet_nocalib.Tau32_wta, \
-           "%4.3f" % jet_nocalib.Angularity, jet_nocalib.Aplanarity, jet_nocalib.PlanarFlow, jet_nocalib.Sphericity, \
+           "%4.3f" % jet_nocalib.D2, "%4.3f" % jet_nocalib.C2, \
+           "%4.3f" % jet_nocalib.Tau1_wta, "%4.3f" % jet_nocalib.Tau2_wta, "%4.3f" % jet_nocalib.Tau3_wta, "%4.3f" % jet_nocalib.Tau21_wta, "%4.3f" %  jet_nocalib.Tau32_wta, \
+           "%4.3f" % jet_nocalib.Angularity, "%4.3f" % jet_nocalib.Aplanarity, "%4.3f" % jet_nocalib.PlanarFlow, "%4.3f" % jet_nocalib.Sphericity, \
            "%4.1f" % jet_calib.Pt()/GeV,   "%4.3f" % jet_calib.Rapidity(),   "%4.1f" % jet_calib.E()/GeV,   "%4.1f" % jet_calib.P()/GeV,   "%4.1f" % jet_calib.M()/GeV, \
            ) )
 
