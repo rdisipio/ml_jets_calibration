@@ -1,16 +1,11 @@
 #!/bin/bash
 
-target=csv/user.sketabch.akt10.csv
+target=csv/jennis/training.csv
 rm -fr $target
 touch $target
 
-head -n   100000 csv/sketabch/Pythia8EvtGen_JZ3W.txt >> $target.tmp
-head -n  1000000 csv/sketabch/Pythia8EvtGen_JZ4W.txt >> $target.tmp
-head -n   500000 csv/sketabch/Pythia8EvtGen_JZ5W.txt >> $target.tmp
-
-#cat csv/sketabch/Pythia8EvtGen_JZ3W.txt >> $target.tmp
-#cat csv/sketabch/Pythia8EvtGen_JZ4W.txt >> $target.tmp
-#cat csv/sketabch/Pythia8EvtGen_JZ5W.txt >> $target.tmp
+head -n   10000 csv/jennis/361023.csv >> $target.tmp
+head -n 1000000 csv/jennis/361024.csv >> $target.tmp
 
 shuf $target.tmp > $target
 #cat $target.tmp > $target
