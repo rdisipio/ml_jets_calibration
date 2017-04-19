@@ -88,6 +88,9 @@ for ientry in range(nentries):
   if jet_truth.Pt() < 200*GeV: skip = 1
   if jet_truth.Pt() > 3000*GeV: skip = 1
 
+  if jet_track.Pt() < 200*GeV: skip = 1
+  if jet_track.Pt() > 3000*GeV: skip = 1
+
   if jet_calib.M() < 30*GeV: skip = 1
   if jet_calib.M() > 300*GeV: skip = 1
 
