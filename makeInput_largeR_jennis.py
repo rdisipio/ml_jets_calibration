@@ -141,21 +141,21 @@ for ientry in range(nentries):
   # fjet1_ThrustMaj = tree.fjet1_ThrustMaj
   # fjet1_ThrustMin = tree.fjet1_ThrustMin
 
-  i+=1
-
   csvwriter.writerow( (
-           "%4.1f" % mc_Weight, #no eventNumber, mu or prw\
-           "%4.1f" % jet_truth.Pt()/GeV,   "%4.3f" % jet_truth.Rapidity(),   "%4.1f" % jet_truth.E()/GeV,   "%4.1f" % jet_truth.P()/GeV,   "%4.1f" % jet_truth.M()/GeV, \
-           "%4.1f" % jet_nocalib.Pt()/GeV, "%4.3f" % jet_nocalib.Rapidity(), "%4.1f" % jet_nocalib.E()/GeV, "%4.1f" % jet_nocalib.P()/GeV, "%4.1f" % jet_nocalib.M()/GeV, \
-           "%4.1f" % jet_track.Pt()/GeV,   "%4.3f" % jet_track.Rapidity(),   "%4.1f" % jet_track.E()/GeV,   "%4.1f" % jet_track.P()/GeV,   "%4.1f" % jet_track.M()/GeV, \
+           "%4.1f" % mc_weight, #no eventNumber, mu or prw\
+           "%4.1f" % (jet_truth.Pt()/GeV),   "%.2f" % jet_truth.Rapidity(),   "%4.1f" % (jet_truth.E()/GeV),   "%4.1f" % (jet_truth.P()/GeV),   "%4.1f" % (jet_truth.M()/GeV), \
+           "%4.1f" % (jet_nocalib.Pt()/GeV), "%.2f" % jet_nocalib.Rapidity(), "%4.1f" % (jet_nocalib.E()/GeV), "%4.1f" % (jet_nocalib.P()/GeV), "%4.1f" % (jet_nocalib.M()/GeV), \
+           "%4.1f" % (jet_track.Pt()/GeV),   "%.2f" % jet_track.Rapidity(),   "%4.1f" % (jet_track.E()/GeV),   "%4.1f" % (jet_track.P()/GeV),   "%4.1f" % (jet_track.M()/GeV), \
            "%.3f"  % jet_nocalib.m_over_pt, "%.3f" % jet_track.m_over_pt, "%.3f" % jet_nocalib.mTA, \
            "%i"    % jet_nocalib.Nconstit, "%.3f" % jet_nocalib.Nconstit_over_m, "%.3f" % jet_nocalib.width, "%.3f" % jet_nocalib.width_over_m, \
            # "%f" % jet_nocalib.ECF1, "%f" % jet_nocalib.ECF2, "%f" % jet_nocalib.ECF3, \
            "%4.3f" % jet_nocalib.D2, "%4.3f" % jet_nocalib.C2, \
            "%4.3f" % jet_nocalib.Tau1_wta, "%4.3f" % jet_nocalib.Tau2_wta, "%4.3f" % jet_nocalib.Tau3_wta, "%4.3f" % jet_nocalib.Tau21_wta, "%4.3f" %  jet_nocalib.Tau32_wta, \
            "%4.3f" % jet_nocalib.Angularity, "%4.3f" % jet_nocalib.Aplanarity, "%4.3f" % jet_nocalib.PlanarFlow, "%4.3f" % jet_nocalib.Sphericity, \
-           "%4.1f" % jet_calib.Pt()/GeV,   "%4.3f" % jet_calib.Rapidity(),   "%4.1f" % jet_calib.E()/GeV,   "%4.1f" % jet_calib.P()/GeV,   "%4.1f" % jet_calib.M()/GeV, \
+           "%4.1f" % (jet_calib.Pt()/GeV),   "%.2f" % jet_calib.Rapidity(),   "%4.1f" % (jet_calib.E()/GeV),   "%4.1f" % (jet_calib.P()/GeV),   "%4.1f" % (jet_calib.M()/GeV), \
            ) )
+
+  i+=1
 
 outfile.close()
 

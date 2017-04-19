@@ -6,7 +6,7 @@ touch $target
 
 head -n   100000 csv/sketabch/Pythia8EvtGen_JZ3W.txt >> $target.tmp
 head -n  1000000 csv/sketabch/Pythia8EvtGen_JZ4W.txt >> $target.tmp
-head -n  1000000 csv/sketabch/Pythia8EvtGen_JZ5W.txt >> $target.tmp
+head -n   500000 csv/sketabch/Pythia8EvtGen_JZ5W.txt >> $target.tmp
 
 #cat csv/sketabch/Pythia8EvtGen_JZ3W.txt >> $target.tmp
 #cat csv/sketabch/Pythia8EvtGen_JZ4W.txt >> $target.tmp

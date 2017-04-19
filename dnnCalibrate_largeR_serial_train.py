@@ -39,8 +39,8 @@ from features import *
 training_filename = sys.argv[1]
 
 # Set up scalers
-create_scaler = StandardScaler
-#create_scaler = MinMaxScaler
+#create_scaler = StandardScaler
+create_scaler = MinMaxScaler
 scaler_pT  = create_scaler()
 scaler_eta = create_scaler()
 scaler_E   = create_scaler()
