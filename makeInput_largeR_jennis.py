@@ -31,7 +31,7 @@ def DumpFourVector( p ):
 
 infilename = sys.argv[1]
 
-outfilename = "csv/" + infilename.split("/")[-1].replace( ".root", ".csv" )
+outfilename = infilename.replace( ".dat", ".csv" )
 outfile = open( outfilename, "wt" )
 csvwriter = csv.writer( outfile )
 print "INFO: output file:", outfilename
@@ -62,16 +62,6 @@ for ientry in range(nentries):
   jet_track = TLorentzVector()
   jet_track.SetPtEtaPhiM( tree.track_jet_pt, tree.track_jet_eta, tree.track_jet_phi, tree.track_jet_m )
 
-  jet_track.m_over_pt = jet_track.M() / jet_track.Pt()
-
-  jet_track.tau21_wta = tree.track_jet_tau21_wta
-  jet_track.tau32_wta = tree.track_jet_tau32_wta
-  jet_track.tau1_wta  = tree.track_jet_tau1_wta
-  jet_track.tau2_wta  = tree.track_jet_tau2_wta
-  jet_track.tau3_wta  = tree.track_jet_tau3_wta
-  jet_track.sum_pt    = tree.track_sum_pt
-  jet_track.sum_m     = tree.track_sum_m
-
   # ATLAS-calibrated jet
   jet_calib = TLorentzVector()
   jet_calib.SetPtEtaPhiM( tree.calib_jet_pt, tree.calib_jet_eta, tree.calib_jet_phi, tree.calib_jet_m )
@@ -79,50 +69,15 @@ for ientry in range(nentries):
   # Truth jet
   jet_truth = TLorentzVector()
   jet_truth.SetPtEtaPhiM( tree.truth_jet_pt, tree.truth_jet_eta, tree.truth_jet_phi, tree.truth_jet_m )
-  jet_truth.m_over_pt = jet_truth.M() / jet_truth.Pt()
 
   # Non-calibrated jet
   jet_nocalib = TLorentzVector()
   jet_nocalib.SetPtEtaPhiM( tree.pt, tree.eta, tree.phi, tree.m )
-  
-  jet_nocalib.m_over_pt = jet_nocalib.M() / jet_nocalib.Pt()
-  jet_nocalib.mTA       = jet_nocalib.M() / jet_track.M()
-
-  jet_nocalib.Nconstit = tree.n_constituents
-  jet_nocalib.Nconstit_over_m = tree.n_constituents / ( jet_nocalib.M()/GeV )
-  jet_nocalib.width   = tree.width
-  jet_nocalib.width_over_m = 1e6 * jet_nocalib.width / jet_nocalib.M()
-
-
-  jet_nocalib.ECF1    = tree.ECF1
-  jet_nocalib.ECF2    = tree.ECF2
-  jet_nocalib.ECF3    = tree.ECF3
-  jet_nocalib.D2      = tree.D2
-  jet_nocalib.C2      = tree.C2
-
-  jet_nocalib.Tau1_wta  = tree.Tau1_wta
-  jet_nocalib.Tau2_wta  = tree.Tau2_wta
-  jet_nocalib.Tau3_wta  = tree.Tau3_wta
-
-  jet_nocalib.Tau21_wta  = tree.Tau21_wta
-  jet_nocalib.Tau32_wta  = tree.Tau32_wta
-
-  jet_nocalib.Angularity = tree.angularity 
-  jet_nocalib.Aplanarity = tree.aplanarity
-  jet_nocalib.PlanarFlow = tree.planarflow
-  jet_nocalib.Sphericity = tree.sphericity
-  # fjet1_ThrustMaj = tree.fjet1_ThrustMaj
-  # fjet1_ThrustMin = tree.fjet1_ThrustMin
-
 
   #######################
   # Apply event selection
 
   skip = 0
-
-  # if abs( fjet1_calib.Eta() )   > 2.0: skip = 1
-  # if abs( fjet1_nocalib.Eta() ) > 2.0: skip = 1
-  # if abs( fjet1_truth.Eta() )   > 2.0: skip = 1
 
   if jet_calib.Pt() < 200.: skip = 1
   if jet_calib.Pt() > 3000.: skip = 1
@@ -144,6 +99,48 @@ for ientry in range(nentries):
 
   if not skip == 0: continue
 
+  # Create other variables
+  jet_truth.m_over_pt = jet_truth.M() / jet_truth.Pt()
+  
+  jet_track.m_over_pt = jet_track.M() / jet_track.Pt()
+
+  jet_track.tau21_wta = tree.track_jet_Tau21_wta
+  jet_track.tau32_wta = tree.track_jet_Tau32_wta
+  jet_track.tau1_wta  = tree.track_jet_Tau1_wta
+  jet_track.tau2_wta  = tree.track_jet_Tau2_wta
+  jet_track.tau3_wta  = tree.track_jet_Tau3_wta
+  jet_track.sum_pt    = tree.track_sum_pt
+  jet_track.sum_m     = tree.track_sum_m
+
+  
+  jet_nocalib.m_over_pt = jet_nocalib.M() / jet_nocalib.Pt()
+  jet_nocalib.mTA       = jet_nocalib.M() / jet_track.M()
+
+  jet_nocalib.Nconstit        = tree.n_constituents
+  jet_nocalib.Nconstit_over_m = tree.n_constituents / ( jet_nocalib.M()/GeV )
+  jet_nocalib.width           = tree.width
+  jet_nocalib.width_over_m    = 1e6 * jet_nocalib.width / jet_nocalib.M()
+
+
+  jet_nocalib.ECF1    = tree.ECF1
+  jet_nocalib.ECF2    = tree.ECF2
+  jet_nocalib.ECF3    = tree.ECF3
+  jet_nocalib.D2      = tree.D2
+  jet_nocalib.C2      = tree.C2
+
+  jet_nocalib.Tau1_wta   = tree.Tau1_wta
+  jet_nocalib.Tau2_wta   = tree.Tau2_wta
+  jet_nocalib.Tau3_wta   = tree.Tau3_wta
+  jet_nocalib.Tau21_wta  = tree.Tau21_wta
+  jet_nocalib.Tau32_wta  = tree.Tau32_wta
+
+  jet_nocalib.Angularity = tree.angularity 
+  jet_nocalib.Aplanarity = tree.aplanarity
+  jet_nocalib.PlanarFlow = tree.planarflow
+  jet_nocalib.Sphericity = tree.sphericity
+  # fjet1_ThrustMaj = tree.fjet1_ThrustMaj
+  # fjet1_ThrustMin = tree.fjet1_ThrustMin
+
   i+=1
 
   csvwriter.writerow( (
@@ -151,7 +148,7 @@ for ientry in range(nentries):
            "%4.1f" % jet_truth.Pt()/GeV,   "%4.3f" % jet_truth.Rapidity(),   "%4.1f" % jet_truth.E()/GeV,   "%4.1f" % jet_truth.P()/GeV,   "%4.1f" % jet_truth.M()/GeV, \
            "%4.1f" % jet_nocalib.Pt()/GeV, "%4.3f" % jet_nocalib.Rapidity(), "%4.1f" % jet_nocalib.E()/GeV, "%4.1f" % jet_nocalib.P()/GeV, "%4.1f" % jet_nocalib.M()/GeV, \
            "%4.1f" % jet_track.Pt()/GeV,   "%4.3f" % jet_track.Rapidity(),   "%4.1f" % jet_track.E()/GeV,   "%4.1f" % jet_track.P()/GeV,   "%4.1f" % jet_track.M()/GeV, \
-           "%.3f" % jet_nocalib.m_over_pt, "%.3f" % jet_track.m_over_pt, "%.3f" % jet_nocalib.mTA, \
+           "%.3f"  % jet_nocalib.m_over_pt, "%.3f" % jet_track.m_over_pt, "%.3f" % jet_nocalib.mTA, \
            "%i"    % jet_nocalib.Nconstit, "%.3f" % jet_nocalib.Nconstit_over_m, "%.3f" % jet_nocalib.width, "%.3f" % jet_nocalib.width_over_m, \
            # "%f" % jet_nocalib.ECF1, "%f" % jet_nocalib.ECF2, "%f" % jet_nocalib.ECF3, \
            "%f"    % jet_nocalib.D2, jet_nocalib.C2, \
