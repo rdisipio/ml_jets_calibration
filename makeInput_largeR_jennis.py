@@ -155,7 +155,6 @@ for ientry in range(nentries):
            "%4.3f" % jet_nocalib.Tau1_wta, "%4.3f" % jet_nocalib.Tau2_wta, "%4.3f" % jet_nocalib.Tau3_wta, "%4.3f" % jet_nocalib.Tau21_wta, jet_nocalib.Tau32_wta, \
            "%4.3f" % jet_nocalib.Angularity, jet_nocalib.Aplanarity, jet_nocalib.PlanarFlow, jet_nocalib.Sphericity, \
            "%4.1f" % jet_calib.Pt()/GeV,   "%4.3f" % jet_calib.Rapidity(),   "%4.1f" % jet_calib.E()/GeV,   "%4.1f" % jet_calib.P()/GeV,   "%4.1f" % jet_calib.M()/GeV, \
-           # "%4.3f" % alpha[0], "%4.3f" % alpha[1], "%4.3f" % alpha[2], "%4.3f" % alpha[3], \
            ) )
 
 outfile.close()
