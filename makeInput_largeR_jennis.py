@@ -100,6 +100,9 @@ for ientry in range(nentries):
   if jet_truth.M() < 30*GeV: skip = 1
   if jet_truth.M() > 300*GeV: skip = 1
 
+  if jet_track.M() < 30*GeV: skip = 1
+  if jet_track.M() > 300*GeV: skip = 1
+
   if not skip == 0: continue
 
   # Create other variables
