@@ -39,8 +39,8 @@ from features import *
 training_filename = sys.argv[1]
 
 # Set up scalers
-#create_scaler = StandardScaler
-create_scaler = MinMaxScaler
+create_scaler = StandardScaler
+#create_scaler = MinMaxScaler
 scaler_pT  = create_scaler()
 scaler_eta = create_scaler()
 scaler_E   = create_scaler()
@@ -67,7 +67,7 @@ X_train_M = df_training[features_M].values
 X_train_M = scaler_M.fit_transform( X_train_M )
 
 y_train = df_training[ [ "jet_truth_Pt", "jet_truth_Eta", "jet_truth_E", "jet_truth_M" ] ].values
-dnn = KerasRegressor( build_fn=create_model_merged, nb_epoch=20, batch_size=10000, verbose=1 )
+dnn = KerasRegressor( build_fn=create_model_merged, nb_epoch=30, batch_size=10000, verbose=1 )
 dnn.fit( [ X_train_pT, X_train_eta, X_train_E, X_train_M ], y_train )
 res = dnn.score( [ X_train_pT, X_train_eta, X_train_E, X_train_M ], y_train ) 
 print "Score(pT,E):", res
