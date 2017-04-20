@@ -89,7 +89,7 @@ from features import *
 df_testing = pd.read_csv( testing_filename, delimiter=',', names=header )
 #print df_testing
 
-event_info = df_testing[ [ "mc_weight" ] ].values
+event_info = df_testing[ [ "mc_Weight" ] ].values
 
 X_test_pT = df_testing[features_pT].values
 X_test_pT = scaler_pT.fit_transform( X_test_pT )
