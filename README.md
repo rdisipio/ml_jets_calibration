@@ -1,6 +1,9 @@
 Setup Environment
 =================
 
+Follow the instructions on the ATLAS ML twiki page
+https://twiki.cern.ch/twiki/bin/view/AtlasComputing/MLSoftwareStandAloneSetup
+
 ```
 module load anaconda2
 source activate machine_learning
@@ -16,14 +19,14 @@ Quick Run
 ```bash
 
 mkdir csv
-mkdir csv/sketabch
-scp lxplus.cern.ch:/afs/cern.ch/work/s/sketabch/public/ML_input/*.txt ./csv/sketabch/
+mkdir csv/jennis
+scp lxplus.cern.ch:/afs/cern.ch/work/s/sketabch/public/ML_input/*.txt ./csv/jennis
 
-./make_training_largeR_sketabch.sh # this creates csv/user.sketabch.akt10.csv with shuffled entries
+./make_training_largeR_jennis.sh # this creates csv/jennis/training.csv with shuffled entries
 
-./dnnCalibrate_largeR_serial_train.py csv/user.sketabch.akt10.csv 
-./dnnCalibrate_largeR_substructure_predict.py csv/user.sketabch.akt10.csv
-./make_plots.sh user.sketabch.akt10.model.merged.histograms.root
+./dnnCalibrate_largeR_serial_train.py csv/jennis/training.csv
+./dnnCalibrate_largeR_substructure_predict.py csv/jennis/training.csv
+./make_plots.sh training.model.merged.histograms.root
 ```
 
 You may want to modify ```features.py``` and ```models.py``` .
