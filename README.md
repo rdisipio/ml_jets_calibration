@@ -156,7 +156,9 @@ source setup_machine_learning.sh
 module load gcc/4.8.1
 module load cuda/7.5
 
-THEANO_FLAGS=mode=FAST_RUN,device=gpu,floatX=float32 python ./dnnCalibrate_largeR_substructure_train.py csv/jennis/training.csv
+export THEANO_FLAGS=mode=FAST_RUN,device=gpu,floatX=float32
+
+python dnnCalibrate_largeR_serial_train.py csv/jennis/training.csv
 ```
 
 To submit to SciNet/Gravity GPU cluster
