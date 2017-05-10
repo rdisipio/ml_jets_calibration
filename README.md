@@ -24,7 +24,7 @@ scp lxplus.cern.ch:/afs/cern.ch/work/s/sketabch/public/ML_input/*.txt ./csv/jenn
 
 ./make_training_largeR_jennis.sh # this creates csv/jennis/training.csv with shuffled entries
 
-./dnnCalibrate_largeR_serial_train.py csv/jennis/training.csv
+./dnnCalibrate_largeR_substructure_train.py csv/jennis/training.csv
 ./dnnCalibrate_largeR_substructure_predict.py csv/jennis/training.csv
 ./make_plots.sh training.model.merged.histograms.root
 ```
@@ -158,7 +158,7 @@ module load cuda/7.5
 
 export THEANO_FLAGS=mode=FAST_RUN,device=gpu,floatX=float32
 
-python dnnCalibrate_largeR_serial_train.py csv/jennis/training.csv
+python dnnCalibrate_largeR_substructure_train.py csv/jennis/training.csv
 ```
 
 To submit to SciNet/Gravity GPU cluster

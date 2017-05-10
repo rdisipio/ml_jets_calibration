@@ -99,6 +99,8 @@ def create_model_merged():
    model.add(merged)
    model.add( Dense( 4 ) )
 
+   model.add( Dense( 4 ) )
+
    model.compile( loss='mean_squared_error', optimizer='adam' )
 #   model.compile( loss='mean_squared_logarithmic_error', optimizer='adam' )
 
