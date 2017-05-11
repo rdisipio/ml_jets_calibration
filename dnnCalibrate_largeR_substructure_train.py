@@ -26,10 +26,12 @@ from ROOT import *
 
 np.set_printoptions( precision=2, suppress=True )
 
-early_stopping = EarlyStopping(monitor='val_loss', patience=2)
+early_stopping = EarlyStopping( monitor='val_loss', patience=20, mode='min' )
 
-checkpoint = ModelCheckpoint( "checkpoint.h5", monitor='val_acc', verbose=1, save_best_only=True, mode='max')
-callbacks_list = [checkpoint]
+#checkpoint = ModelCheckpoint( "checkpoint.h5", monitor='val_acc', verbose=1, save_best_only=True, mode='max')
+#callbacks_list = [checkpoint]
+
+callbacks_list = [ early_stopping ]
 
 #################
 
@@ -67,8 +69,13 @@ X_train_M = df_training[features_M].values
 X_train_M = scaler_M.fit_transform( X_train_M )
 
 y_train = df_training[ [ "jet_truth_Pt", "jet_truth_Eta", "jet_truth_E", "jet_truth_M" ] ].values
-dnn = KerasRegressor( build_fn=create_model_merged, nb_epoch=30, batch_size=10000, verbose=1 )
+
+MAX_EPOCHS = 30
+BATCH_SIZE = 10000
+
+dnn = KerasRegressor( build_fn=create_model_merged, nb_epoch=MAX_EPOCHS, batch_size=BATCH_SIZE, validation_split=0.05, callbacks=callbacks_list, verbose=1 )
 dnn.fit( [ X_train_pT, X_train_eta, X_train_E, X_train_M ], y_train )
+
 res = dnn.score( [ X_train_pT, X_train_eta, X_train_E, X_train_M ], y_train ) 
 print "Score(pT,E):", res
 dnn.model.save_weights( "weights.model_merged.h5", True )
@@ -88,7 +95,6 @@ dnn.model.save( model_filename )
 
 #dnn1.model.save_weights( "weights.model_pT_E_parallel.h5", True )
 
-
 #dnn.model.save( "dnn.largeR_substructure.sketabch.h5" )
 
 scaler_filename = "scaler.largeR_substructure.pkl"
@@ -102,3 +108,15 @@ with open( scaler_filename, "wb" ) as file_scaler:
 #  pickle.dump( poly,   file_scaler )
 print "INFO: scalers saved to file", scaler_filename
 print "INFO: model saved to file", model_filename
+
+print "INFO: testing..."
+y_nocalib = df_training[y_features_nocalib].values
+y_truth   = df_training[y_features_truth].values
+y_calib   = df_training[y_features_calib].values
+y_dnncalib = dnn.predict( [ X_train_pT, X_train_eta, X_train_E, X_train_M ] )
+print
+
+# Print out example
+for i in range(30):
+  print "  ", y_nocalib[i], "----> DNN =", y_dnncalib[i], ":: Truth =", y_truth[i]
+

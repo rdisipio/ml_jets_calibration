@@ -232,6 +232,11 @@ print "INFO: looping over %i entries" % n_entries
 for i in range( n_entries ):
   w = event_info[i][0]
 
+  if ( n_entries < 10 ) or ( (i+1) % int(float(n_entries)/10.)  == 0 ):
+    perc = 100. * i / float(n_entries)
+    print "INFO: Event %-9i  (%3.0f %%)" % ( i, perc )
+
+
   pT_truth   = y_truth[i][0]
   eta_truth  = y_truth[i][1]
   E_truth    = y_truth[i][2]
