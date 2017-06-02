@@ -21,6 +21,8 @@ import pandas as pd
 
 from ROOT import *
 
+from models import *
+
 np.set_printoptions( precision=2, suppress=True )
 
 
@@ -74,15 +76,19 @@ with open( filename_scaler, "rb" ) as file_scaler:
   scaler_E   = pickle.load( file_scaler )
   scaler_M   = pickle.load( file_scaler )
   scaler_all = pickle.load( file_scaler )
+  y_scaler   = pickle.load( file_scaler )
 
 testing_filename  = sys.argv[1]
 
-model_filename = "model.merged.h5"
+model_filename = "model.funnel.h5"
 dnn = load_model( model_filename )
+#dnn = create_model_funnel()
+#dnn.model.load_weights( "weights.model_funnel.h5" )
+#dnn.model.trainable = False
 
-print "INFO: calibration scheme:", calibration
-print "INFO: model loaded from file", model_filename
-print dnn.model.summary()
+#print "INFO: calibration scheme:", calibration
+#print "INFO: model loaded from file", model_filename
+#print dnn.model.summary()
 
 from features import *
 
@@ -109,13 +115,9 @@ y_truth   = df_testing[y_features_truth].values
 y_calib   = df_testing[y_features_calib].values
 
 
-#y_nocalib = poly.transform( y_nocalib )
-#X_test = scaler.transform( X_test )
-
 y_dnncalib = dnn.predict( [ X_test_pT, X_test_eta, X_test_E, X_test_M ] )
-
-#res = dnn.score( [ X_test_pT, X_test_eta, X_test_E, X_test_M ], y_dnncalib )
-#print "Score(testing):", res
+#y_dnncalib = dnn.predict( [ X_test_pT, X_test_E, X_test_M, X_test_eta ] )
+y_dnncalib = y_scaler.inverse_transform( y_dnncalib )
 
 # Create ROOT output file
 outfilename = testing_filename.split("/")[-1].replace("csv","") +  model_filename.replace(".h5",".histograms.root")
@@ -226,6 +228,11 @@ for i_pT in range(len(ptbins)):
 for i in range(10):
   print "  ", y_nocalib[i], "----> DNN =", y_dnncalib[i], ":: Truth =", y_truth[i]
 
+i_pt = 0
+i_eta = 1
+i_E  = 2
+i_M  = 3
+
 #, " :: Event info =", event_test[i]
 n_entries = len( y_truth )
 print "INFO: looping over %i entries" % n_entries
@@ -237,36 +244,36 @@ for i in range( n_entries ):
     print "INFO: Event %-9i  (%3.0f %%)" % ( i, perc )
 
 
-  pT_truth   = y_truth[i][0]
-  eta_truth  = y_truth[i][1]
-  E_truth    = y_truth[i][2]
-  M_truth    = y_truth[i][3]
-  v_truth = TLorentzVector()
-  v_truth.SetPtEtaPhiM( pT_truth, eta_truth, 0., M_truth )
+  pT_truth   = y_truth[i][i_pt]
+  eta_truth  = y_truth[i][i_eta]
+  E_truth    = y_truth[i][i_E]
+  M_truth    = y_truth[i][i_M]
+#  v_truth = TLorentzVector()
+#  v_truth.SetPtEtaPhiM( pT_truth, eta_truth, 0., M_truth )
 #  E_truth = v_truth.E()
 
-  pT_calib   = y_calib[i][0]
-  eta_calib  = y_calib[i][1]
-  E_calib    = y_calib[i][2]
-  M_calib    = y_calib[i][3]
-  v_calib = TLorentzVector()
-  v_calib.SetPtEtaPhiM( pT_calib, eta_calib, 0., M_calib )
+  pT_calib   = y_calib[i][i_pt]
+  eta_calib  = y_calib[i][i_eta]
+  E_calib    = y_calib[i][i_E]
+  M_calib    = y_calib[i][i_M]
+#  v_calib = TLorentzVector()
+#  v_calib.SetPtEtaPhiM( pT_calib, eta_calib, 0., M_calib )
 #  E_calib = v_calib.E()
 
-  pT_nocalib  = y_nocalib[i][0]
-  eta_nocalib = y_nocalib[i][1]
-  E_nocalib   = y_nocalib[i][2]
-  M_nocalib   = y_nocalib[i][3]
-  v_nocalib = TLorentzVector()
-  v_nocalib.SetPtEtaPhiM( pT_nocalib, eta_nocalib, 0., M_nocalib )  
+  pT_nocalib  = y_nocalib[i][i_pt]
+  eta_nocalib = y_nocalib[i][i_eta]
+  E_nocalib   = y_nocalib[i][i_E]
+  M_nocalib   = y_nocalib[i][i_M]
+#  v_nocalib = TLorentzVector()
+#  v_nocalib.SetPtEtaPhiM( pT_nocalib, eta_nocalib, 0., M_nocalib )  
 #  E_nocalib = v_nocalib.E()
 
-  pT_dnncalib  = y_dnncalib[i][0]
-  eta_dnncalib = y_dnncalib[i][1]
-  E_dnncalib   = y_dnncalib[i][2]
-  M_dnncalib   = y_dnncalib[i][3]
-  v_dnncalib = TLorentzVector() 
-  v_dnncalib.SetPtEtaPhiM( pT_dnncalib, eta_dnncalib, 0., M_dnncalib )
+  pT_dnncalib  = y_dnncalib[i][i_pt]
+  eta_dnncalib = y_dnncalib[i][i_eta]
+  E_dnncalib   = y_dnncalib[i][i_E]
+  M_dnncalib   = y_dnncalib[i][i_M]
+#  v_dnncalib = TLorentzVector() 
+#  v_dnncalib.SetPtEtaPhiM( pT_dnncalib, eta_dnncalib, 0., M_dnncalib )
 #  E_dnncalib = v_dnncalib.E()
 
   # Now fill histograms
