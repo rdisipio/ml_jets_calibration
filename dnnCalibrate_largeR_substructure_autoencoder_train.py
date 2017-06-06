@@ -60,16 +60,16 @@ print "INFO: creating autoencoder %i -> %i ->%i" % ( n_input_all, encoding_dim, 
 encoder_input = Input( shape=(n_input_all,) )
 
 # linear model (=PCA)
-#encoded = Dense( encoding_dim )(encoder_input)
-#decoded = Dense(  n_input_all )(encoded)
+encoded = Dense( encoding_dim )(encoder_input)
+decoded = Dense(  n_input_all )(encoded)
 
-encoded = Dense( 30, activation='tanh' )(encoder_input)
-encoded = Dense( 20, activation='tanh' )(encoded)
-encoded = Dense( encoding_dim, activation='tanh' )(encoded)
+#encoded = Dense( 30, activation='tanh' )(encoder_input)
+#encoded = Dense( 20, activation='tanh' )(encoded)
+#encoded = Dense( encoding_dim, activation='tanh' )(encoded)
 
-decoded = Dense( 20, activation='tanh' )(encoded)
-decoded = Dense( 30, activation='tanh' )(decoded)
-decoded = Dense(    n_input_all )(decoded)
+#decoded = Dense( 20, activation='tanh' )(encoded)
+#decoded = Dense( 30, activation='tanh' )(decoded)
+#decoded = Dense(    n_input_all )(decoded)
 
 autoencoder = Model( inputs=encoder_input, outputs=decoded)
 #autoencoder.compile(optimizer = 'adadelta', loss = 'binary_crossentropy')
