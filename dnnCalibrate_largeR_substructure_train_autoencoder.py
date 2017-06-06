@@ -44,17 +44,17 @@ training_filename = sys.argv[1]
 # Set up scalers
 create_scaler = StandardScaler
 #create_scaler = MinMaxScaler
-scaler_all = create_scaler()
+X_scaler = create_scaler()
 
 # read in input file
 df_training = pd.read_csv( training_filename, delimiter=',', names=header )
 
 X_train_all = df_training[features_all].values
-X_train_all = scaler_all.fit_transform( X_train_all )
+X_train_all = X_scaler.fit_transform( X_train_all )
 
 # Create autoencoder
 n_input_all = len( features_all )
-encoding_dim = 10
+encoding_dim = 5
 print "INFO: creating autoencoder %i -> %i ->%i" % ( n_input_all, encoding_dim, n_input_all )
 
 encoder_input = Input( shape=(n_input_all,) )
@@ -74,14 +74,19 @@ decoded = Dense(    n_input_all )(decoded)
 autoencoder = Model( inputs=encoder_input, outputs=decoded)
 #autoencoder.compile(optimizer = 'adadelta', loss = 'binary_crossentropy')
 autoencoder.compile( optimizer = 'adam', loss='mean_squared_error' )
-autoencoder.fit( X_train_all, X_train_all, epochs=10, batch_size=10000, validation_split=0.05, callbacks=callbacks_list, verbose=1 )
+autoencoder.fit( X_train_all, X_train_all, epochs=10, batch_size=1000, validation_split=0.05, callbacks=callbacks_list, verbose=1 )
 
 print "INFO: Auto-encoder fit finished"
 
 # now create encoder-only model
 encoder = Model(inputs=encoder_input, outputs=encoded)
+encoder.encoding_dim = encoding_dim
 #encode.compile( optimizer = 'adam', loss='mean_squared_error' )
 encoder.save( "encoder.h5" )
+
+scaler_filename = "X_scaler.pkl"
+with open( scaler_filename, "wb" ) as file_scaler:
+  pickle.dump( X_scaler, file_scaler )
 
 # these are the compressed data
 X_train_all_encoded = encoder.predict(X_train_all)

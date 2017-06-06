@@ -44,20 +44,21 @@ from features import *
 training_filename = sys.argv[1]
 
 # Set up scalers
-create_scaler = StandardScaler
-#create_scaler = MinMaxScaler
-scaler_all = create_scaler()
+filename_scaler = "X_scaler.pkl"
+with open( filename_scaler, "rb" ) as file_scaler:
+   X_scaler = pickle.load( file_scaler )
 
 # read in input file
 df_training = pd.read_csv( training_filename, delimiter=',', names=header )
 
 X_train_all = df_training[features_all].values
-X_train_all = scaler_all.fit_transform( X_train_all )
+X_train_all = X_scaler.fit_transform( X_train_all )
 
 # Create autoencoder
 n_input_all = len( features_all )
-encoding_dim = 10
+#encoding_dim = 10
 encoder = load_model( "encoder.h5" )
+encoding_dim = encoder.encoding_dim
 print "INFO: loaded encoder %i -> %i" % ( n_input_all, encoding_dim )
 
 # these are the compressed data
@@ -94,8 +95,8 @@ dnn.model.save( model_filename )
 
 scaler_filename = "scaler.largeR_substructure.pkl"
 with open( scaler_filename, "wb" ) as file_scaler:
-  pickle.dump( scaler_all, file_scaler )
-  pickle.dump( y_scaler,   file_scaler )
+  pickle.dump( X_scaler, file_scaler )
+  pickle.dump( y_scaler, file_scaler )
 
 #  pickle.dump( poly,   file_scaler )
 print "INFO: scalers saved to file", scaler_filename
