@@ -75,10 +75,9 @@ y_train_all = y_scaler.fit_transform( y_train_all )
 
 def create_model_calib4():
    input_calib = Input( shape=(encoding_dim, ))
-   dnn_calib   = Dense( 300 )(input_calib)
-   dnn_calib   = Dense( 200 )(dnn_calib)
-   dnn_calib   = Dense( 100 )(dnn_calib)
-   dnn_calib   = Dense(  50 )(dnn_calib)
+   dnn_calib   = Dense( 100, activation='tanh' )(input_calib)
+   dnn_calib   = Dense( 100, activation='tanh' )(dnn_calib)
+   dnn_calib   = Dense( 100, activation='tanh' )(dnn_calib)
    dnn_calib   = Dense(   4 )(dnn_calib)
    dnn_model   = Model( inputs=input_calib, outputs=dnn_calib )
    dnn_model.compile( optimizer='adam', loss='mean_squared_error' )
