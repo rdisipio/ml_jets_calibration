@@ -82,11 +82,14 @@ print "INFO: Auto-encoder fit finished"
 encoder = Model(inputs=encoder_input, outputs=encoded)
 encoder.encoding_dim = encoding_dim
 #encode.compile( optimizer = 'adam', loss='mean_squared_error' )
-encoder.save( "encoder.h5" )
+encoder_filename = "encoder.h5"
+encoder.save( encoder_filename )
+print "INFO: encoder save to file:", encoder_filename
 
 scaler_filename = "X_scaler.pkl"
 with open( scaler_filename, "wb" ) as file_scaler:
   pickle.dump( X_scaler, file_scaler )
+print "INFO: X_scaler saved to file:", scaler_filename
 
 # these are the compressed data
 X_train_all_encoded = encoder.predict(X_train_all)

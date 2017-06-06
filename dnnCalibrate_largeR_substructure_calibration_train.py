@@ -47,6 +47,7 @@ training_filename = sys.argv[1]
 filename_scaler = "X_scaler.pkl"
 with open( filename_scaler, "rb" ) as file_scaler:
    X_scaler = pickle.load( file_scaler )
+print "INFO: X_scaler loaded from file", filename_scaler
 
 # read in input file
 df_training = pd.read_csv( training_filename, delimiter=',', names=header )
