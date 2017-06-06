@@ -3,8 +3,10 @@ from keras.layers import Merge, Dense, Activation, Input
 from keras.layers import Lambda
 from keras.layers import Dropout
 from keras.layers import concatenate
+from keras.layers.normalization import BatchNormalization
 from keras.layers.advanced_activations import ELU
 from keras.layers.merge import *
+from keras.layers.convolutional import Conv1D
 
 from keras.wrappers.scikit_learn import KerasRegressor
 
@@ -257,60 +259,57 @@ def create_model_funnel():
    inputs_E   = Input( shape=(n_input_E,),   name='inputs_E')
    inputs_M   = Input( shape=(n_input_M,),   name='inputs_M')
 
-   x_pT = Dense( 300, activation='relu', kernel_initializer='normal' )(inputs_pT)
-   x_pT = Dense( 200, activation='relu' )(x_pT)
-   x_pT = Dense( 100, activation='relu' )(x_pT)
-   x_pT = Dense(   1, activation='relu' )(x_pT)
+   x_pT = Dense( 300 )(inputs_pT)
+#   x_pT = BatchNormalization()(x_pT)
+   x_pT = Dense( 200, activation='linear' )(x_pT)
+   x_pT = Dense( 100, activation='linear' )(x_pT)
+   x_pT = Dense(   1, activation='linear' )(x_pT)
 
-   x_eta = Dense( 100, kernel_initializer='normal' )(inputs_eta)
-#   x_eta = Dense( 100 )(x_eta)
-   x_eta = Dense(   1, kernel_initializer='normal' )(x_eta)
+   x_eta = Dense( 100 )(inputs_eta)
+#   x_eta = BatchNormalization()(x_eta)
+   x_eta = Dense(   1 )(x_eta)
 
-   x_E = Dense( 300, activation='relu', kernel_initializer='normal' )(inputs_E)
-   x_E = Dense( 200, activation='relu' )(x_E)
-   x_E = Dense( 100, activation='relu' )(x_E)
-   x_E = Dense(   1, activation='relu' )(x_E)
+   x_E = Dense( 300 )(inputs_E)
+#   x_E = BatchNormalization()(x_E)
+   x_E = Dense( 200, activation='linear' )(x_E)
+   x_E = Dense( 100, activation='linear' )(x_E)
+   x_E = Dense(   1, activation='linear' )(x_E)
 
-   x_M = Dense( 300, activation='relu', kernel_initializer='normal' )(inputs_M)
-   x_M = Dense( 200, activation='relu' )(x_M)
-   x_M = Dense( 100, activation='relu' )(x_M)
-   x_M = Dense(   1, activation='relu' )(x_M)
-
-#   x_pT_eta = concatenate( [ x_pT, x_eta ] )
-#   x_pT_eta = Dense( 2, kernel_initializer='normal' )(x_pT_eta)
-#   x_pT_eta = Dense( 2 )(x_pT_eta)
-#   x_pT_eta = Dense( 2 )(x_pT_eta)
-
-#   x_pT_eta_E = concatenate( [ x_pT_eta, x_E ] )
-#   x_pT_eta_E = Dense( 3, kernel_initializer='normal' )(x_pT_eta_E)
-#   x_pT_eta_E = Dense( 3 )(x_pT_eta_E)
-#   x_pT_eta_E = Dense( 3 )(x_pT_eta_E)
-
-#   x_pT_eta_E_M = concatenate( [ x_pT_eta_E, x_M ] )
-#   x_pT_eta_E_M = Dense( 4, kernel_initializer='normal' )(x_pT_eta_E_M)
-#   x_pT_eta_E_M = Dense( 4 )(x_pT_eta_E_M)
+   x_M = Dense( 300 )(inputs_M)
+#   x_M = BatchNormalization()(x_M)
+   x_M = Dense( 200, activation='linear' )(x_M)
+   x_M = Dense( 100, activation='linear' )(x_M)
+   x_M = Dense(   1, activation='linear' )(x_M)
 
 #   x_pT_E = concatenate( [ x_pT, x_E ] )
-#   x_pT_E = Dense(   2, activation='relu', kernel_initializer='normal' )(x_pT_E)
+#   x_pT_E = Dense(   2, activation='relu' )(x_pT_E)
+#   x_pT_E = Dense( 100, activation='relu' )(x_pT_E)
+#   x_pT_E = Dense( 100, activation='relu' )(x_pT_E)
+#   x_pT_E = Dense( 100, activation='relu' )(x_pT_E)
+#   x_pT_E = Dense(   2, activation='relu' )(x_pT_E)
 
 #   x_pT_E_M = concatenate( [ x_pT_E, x_M ] )
 #   x_pT_E_M = concatenate( [x_pT, x_E, x_M] )
-#   x_pT_E_M = Dense( 3, activation='relu', kernel_initializer='normal' )( x_pT_E_M )
-#   x_pT_E_M = Dense( 3, activation='relu' )( x_pT_E_M )
-
+#   x_pT_E_M = Dense(   3, kernel_initializer='normal' )( x_pT_E_M )
+#   x_pT_E_M = Dense( 100, activation='relu' )(x_pT_E_M)
+#   x_pT_E_M = Dense( 100, activation='relu' )(x_pT_E_M)
+#   x_pT_E_M = Dense( 100, activation='relu' )(x_pT_E_M)
+#   x_pT_E_M = Dense(   3, activation='relu' )(x_pT_E_M)
 #   x_pT_eta_E = concatenate( [ x_pT, x_eta, x_E ] )
 #   x_pT_eta_E = Dense( 3, kernel_initializer='normal' )(x_pT_eta_E)
 
-
+#   x_pT_eta_E_M = concatenate( [ x_pT_E, x_eta, x_M ] )
    x_pT_eta_E_M = concatenate( [ x_pT, x_eta, x_E, x_M ] )
 #   x_pT_eta_E_M = concatenate( [ x_pT_E_M, x_eta ] )
 #   x_pT_eta_E_M = concatenate( [ x_pT_eta_E, x_M ] )
-   x_pT_eta_E_M = Dense(   4, kernel_initializer='normal' )(x_pT_eta_E_M)
-   x_pT_eta_E_M = Dense( 300 )(x_pT_eta_E_M)
-   x_pT_eta_E_M = Dense( 200 )(x_pT_eta_E_M)
-   x_pT_eta_E_M = Dense( 100 )(x_pT_eta_E_M)
+   x_pT_eta_E_M = Dense( 4 )(x_pT_eta_E_M)
+#   x_pT_eta_E_M = BatchNormalization()(x_pT_eta_E_M)
+#   x_pT_eta_E_M = Dense( 300 )(x_pT_eta_E_M)
+#   x_pT_eta_E_M = Dense( 200 )(x_pT_eta_E_M)
+#   x_pT_eta_E_M = Dense( 100 )(x_pT_eta_E_M)
+#   x_pT_eta_E_M = Dense( 4 )(x_pT_eta_E_M)
 
-   calibrated = Dense( 4, activation='linear', kernel_initializer='normal', name='calibrated' )(x_pT_eta_E_M)   
+   calibrated = Dense( 4, activation='linear', name='calibrated' )(x_pT_eta_E_M)   
 
    model = Model( inputs = [ inputs_pT, inputs_eta, inputs_E, inputs_M ], outputs=calibrated )
  
@@ -320,3 +319,4 @@ def create_model_funnel():
 
    return model
 
+##################
