@@ -47,6 +47,7 @@ training_filename = sys.argv[1]
 filename_scaler = "X_scaler.pkl"
 with open( filename_scaler, "rb" ) as file_scaler:
    X_scaler = pickle.load( file_scaler )
+
 print "INFO: X_scaler loaded from file", filename_scaler
 
 # read in input file
@@ -57,9 +58,8 @@ X_train_all = X_scaler.fit_transform( X_train_all )
 
 # Create autoencoder
 n_input_all = len( features_all )
-#encoding_dim = 10
 encoder = load_model( "encoder.h5" )
-encoding_dim = encoder.encoding_dim
+encoding_dim = encoder.layers[-1].output_shape[1]
 print "INFO: loaded encoder %i -> %i" % ( n_input_all, encoding_dim )
 
 # these are the compressed data

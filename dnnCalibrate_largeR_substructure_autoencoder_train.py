@@ -88,7 +88,7 @@ print "INFO: encoder save to file:", encoder_filename
 
 scaler_filename = "X_scaler.pkl"
 with open( scaler_filename, "wb" ) as file_scaler:
-  pickle.dump( X_scaler, file_scaler )
+  pickle.dump( X_scaler,     file_scaler )
 print "INFO: X_scaler saved to file:", scaler_filename
 
 # these are the compressed data
