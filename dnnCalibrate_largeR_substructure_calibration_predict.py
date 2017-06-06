@@ -91,8 +91,8 @@ X_test_all = X_scaler.transform( X_test_all )
 
 # Create autoencoder
 n_input_all = len( features_all )
-encoding_dim = 10
 encoder = load_model( "encoder.h5" )
+encoding_dim = encoder.layers[-1].output_shape[1]
 print "INFO: loaded encoder %i -> %i" % ( n_input_all, encoding_dim )
 
 # these are the compressed data

@@ -54,7 +54,7 @@ X_train_all = X_scaler.fit_transform( X_train_all )
 
 # Create autoencoder
 n_input_all = len( features_all )
-encoding_dim = 5
+encoding_dim = 12
 print "INFO: creating autoencoder %i -> %i ->%i" % ( n_input_all, encoding_dim, n_input_all )
 
 encoder_input = Input( shape=(n_input_all,) )

@@ -165,3 +165,28 @@ To submit to SciNet/Gravity GPU cluster
 ```
 qsub -l nodes=1:ppn=12:gpus=2,walltime=12:00:00 -q gravity -I
 ```
+
+
+Using Autoencoders
+==================
+
+Train the encoder:
+
+```
+./dnnCalibrate_largeR_substructure_autoencoder_train.py csv/jennis/training.csv
+```
+
+Using the encoder, train the calibration DNN:
+```
+./dnnCalibrate_largeR_substructure_calibration_train.py csv/jennis/training.csv
+```
+
+Using the calibrated DNN, apply calibration:
+```
+./dnnCalibrate_largeR_substructure_calibration_predict.py csv/jennis/testing.csv 
+```
+
+Make plots:
+```
+./make_plots testing.model.calib4.histograms.root
+```
