@@ -23,3 +23,7 @@ seq 0 11 | parallel -j 8 ./plot_response.py pT etabin_{} ${INPUTFILE}
 seq 0 11 | parallel -j 8 ./plot_response.py E  etabin_{} ${INPUTFILE}
 seq 0 11 | parallel -j 8 ./plot_response.py M  etabin_{} ${INPUTFILE}
 
+seq 0 4 | parallel -j 8 ./plot_response.py pT massbin_{} ${INPUTFILE}
+seq 0 4 | parallel -j 8 ./plot_response.py E  massbin_{} ${INPUTFILE}
+seq 0 4 | parallel -j 8 ./plot_response.py M  massbin_{} ${INPUTFILE}
+
