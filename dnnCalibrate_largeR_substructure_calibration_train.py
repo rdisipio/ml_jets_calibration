@@ -75,16 +75,16 @@ y_train_all = y_scaler.fit_transform( y_train_all )
 
 def create_model_calib4():
    input_calib = Input( shape=(encoding_dim, ))
-   dnn_calib   = Dense( 100, activation='tanh' )(input_calib)
-   dnn_calib   = Dense( 100, activation='tanh' )(dnn_calib)
-   dnn_calib   = Dense( 100, activation='tanh' )(dnn_calib)
+   dnn_calib   = Dense( 500, activation='tanh' )(input_calib)
+   dnn_calib   = Dense( 400, activation='tanh' )(dnn_calib)
+   dnn_calib   = Dense( 300, activation='tanh' )(dnn_calib)
    dnn_calib   = Dense(   4 )(dnn_calib)
    dnn_model   = Model( inputs=input_calib, outputs=dnn_calib )
    dnn_model.compile( optimizer='adam', loss='mean_squared_error' )
    print "INFO: DNN calibration model compiled"
    return dnn_model
 
-BATCH_SIZE = 10000
+BATCH_SIZE = 1000
 MAX_EPOCHS = 10
 print "INFO: creating calibration DNN"
 dnn = KerasRegressor( build_fn=create_model_calib4, epochs=MAX_EPOCHS, batch_size=BATCH_SIZE, validation_split=0.05, callbacks=callbacks_list, verbose=1 )
