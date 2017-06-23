@@ -51,6 +51,10 @@ i = 0
 for ientry in range(nentries):
   tree.GetEntry(ientry)
 
+  if ( nentries < 10 ) or ( (i+1) % int(float(nentries)/10.)  == 0 ):
+    perc = 100. * i / float(nentries)
+    print "INFO: Event %-9i  (%3.0f %%)" % ( i, perc )
+
   mc_weight  = tree.weight
 
   #don't have any of these
@@ -79,29 +83,29 @@ for ientry in range(nentries):
 
   skip = 0
 
-  if jet_calib.Pt() < 200*GeV: skip = 1
-  if jet_calib.Pt() > 3000*GeV: skip = 1
-
-  if jet_nocalib.Pt() < 200*GeV: skip = 1
-  if jet_nocalib.Pt() > 3000*GeV: skip = 1
-
-  if jet_truth.Pt() < 200*GeV: skip = 1
+  if jet_truth.Pt() < 250*GeV: skip = 1
   if jet_truth.Pt() > 3000*GeV: skip = 1
 
-  if jet_track.Pt() < 200*GeV: skip = 1
-  if jet_track.Pt() > 3000*GeV: skip = 1
-
-  if jet_calib.M() < 30*GeV: skip = 1
-  if jet_calib.M() > 300*GeV: skip = 1
-
-  if jet_nocalib.M() < 30*GeV: skip = 1
-  if jet_nocalib.M() > 300*GeV: skip = 1
-
   if jet_truth.M() < 30*GeV: skip = 1
-  if jet_truth.M() > 300*GeV: skip = 1
+#  if jet_truth.M() > 300*GeV: skip = 1
 
-  if jet_track.M() < 30*GeV: skip = 1
-  if jet_track.M() > 300*GeV: skip = 1
+#  if jet_calib.Pt() < 200*GeV: skip = 1
+#  if jet_calib.Pt() > 3000*GeV: skip = 1
+
+#  if jet_nocalib.Pt() < 200*GeV: skip = 1
+#  if jet_nocalib.Pt() > 3000*GeV: skip = 1
+
+#  if jet_track.Pt() < 200*GeV: skip = 1
+#  if jet_track.Pt() > 3000*GeV: skip = 1
+
+  if jet_calib.M() < 10*GeV: skip = 1
+#  if jet_calib.M() > 300*GeV: skip = 1
+
+#  if jet_nocalib.M() < 30*GeV: skip = 1
+#  if jet_nocalib.M() > 300*GeV: skip = 1
+
+  if jet_track.M() < 10*GeV: skip = 1
+#  if jet_track.M() > 300*GeV: skip = 1
 
   if not skip == 0: continue
 

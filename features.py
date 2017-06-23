@@ -25,13 +25,13 @@ header = [
 
 features_all = [
  "jet_nocalib_Pt", "jet_nocalib_Eta", "jet_nocalib_E", "jet_nocalib_P", "jet_nocalib_M",
- "jet_track_Pt", "jet_track_Eta", "jet_track_E", "jet_track_P", "jet_track_M",
  "jet_nocalib_m_over_pt", "jet_track_m_over_pt", "jet_nocalib_mTA",
+ "jet_track_Pt", "jet_track_Eta", "jet_track_E", "jet_track_P", "jet_track_M",
  "jet_nocalib_Nconstit",        "jet_nocalib_width",
- "jet_nocalib_Nconstit_over_m", "jet_nocalib_width_over_m",
+# "jet_nocalib_Nconstit_over_m", "jet_nocalib_width_over_m",
  "jet_nocalib_D2", "jet_nocalib_C2",
- "jet_nocalib_Tau1_wta", "jet_nocalib_Tau2_wta", "jet_nocalib_Tau3_wta",
-"jet_nocalib_Tau21_wta", "jet_nocalib_Tau32_wta",
+# "jet_nocalib_Tau1_wta", "jet_nocalib_Tau2_wta", "jet_nocalib_Tau3_wta",
+ "jet_nocalib_Tau21_wta", "jet_nocalib_Tau32_wta",
  "jet_nocalib_Angularity", "jet_nocalib_Aplanarity", "jet_nocalib_PlanarFlow", "jet_nocalib_Sphericity",
 ]
 

@@ -24,7 +24,7 @@ except:
 import numpy as np
 import pandas as pd
 
-from ROOT import *
+#from ROOT import *
 
 np.set_printoptions( precision=2, suppress=True )
 
@@ -78,9 +78,12 @@ def create_model_calib4():
    dnn_calib   = Dense( 500, activation='tanh' )(input_calib)
    dnn_calib   = Dense( 400, activation='tanh' )(dnn_calib)
    dnn_calib   = Dense( 300, activation='tanh' )(dnn_calib)
+   dnn_calib   = Dense( 200, activation='tanh' )(dnn_calib)
+   dnn_calib   = Dense( 100, activation='tanh' )(dnn_calib)
    dnn_calib   = Dense(   4 )(dnn_calib)
    dnn_model   = Model( inputs=input_calib, outputs=dnn_calib )
-   dnn_model.compile( optimizer='adam', loss='mean_squared_error' )
+#   dnn_model.compile( optimizer='adam', loss='mean_squared_error' )
+   dnn_model.compile( optimizer='adam', loss='mean_absolute_error' )
    print "INFO: DNN calibration model compiled"
    return dnn_model
 

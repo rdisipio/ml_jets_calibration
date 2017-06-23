@@ -22,8 +22,6 @@ except:
 import numpy as np
 import pandas as pd
 
-from ROOT import *
-
 np.set_printoptions( precision=2, suppress=True )
 
 
@@ -54,7 +52,7 @@ X_train_all = X_scaler.fit_transform( X_train_all )
 
 # Create autoencoder
 n_input_all = len( features_all )
-encoding_dim = 18
+encoding_dim = 12
 print "INFO: creating autoencoder %i -> %i ->%i" % ( n_input_all, encoding_dim, n_input_all )
 
 encoder_input = Input( shape=(n_input_all,) )
@@ -63,18 +61,17 @@ encoder_input = Input( shape=(n_input_all,) )
 #encoded = Dense( encoding_dim )(encoder_input)
 #decoded = Dense(  n_input_all )(encoded)
 
-encoded = Dense( 20, activation='tanh' )(encoder_input)
-encoded = Dense( 20, activation='tanh' )(encoded)
+encoded = Dense( 23, activation='tanh' )(encoder_input)
+encoded = Dense( 18, activation='tanh' )(encoded)
 encoded = Dense( encoding_dim, activation='tanh' )(encoded)
-
-decoded = Dense( 20, activation='tanh' )(encoded)
-decoded = Dense( 20, activation='tanh' )(decoded)
+decoded = Dense( 18, activation='tanh' )(encoded)
+decoded = Dense( 23, activation='tanh' )(decoded)
 decoded = Dense(    n_input_all )(decoded)
 
 autoencoder = Model( inputs=encoder_input, outputs=decoded)
 #autoencoder.compile(optimizer = 'adadelta', loss = 'binary_crossentropy')
 autoencoder.compile( optimizer = 'adam', loss='mean_squared_error' )
-autoencoder.fit( X_train_all, X_train_all, epochs=10, batch_size=1000, validation_split=0.05, callbacks=callbacks_list, verbose=1 )
+autoencoder.fit( X_train_all, X_train_all, epochs=10, batch_size=100, validation_split=0.05, callbacks=callbacks_list, verbose=1 )
 
 print "INFO: Auto-encoder fit finished"
 
