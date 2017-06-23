@@ -152,5 +152,5 @@ txt.SetTextFont(42)
 #txt.DrawLatex( 0.65, 0.85, "%2.1f #leq |#eta| #leq %2.1f" % (etamin,etamax) )
 
 #imgname = "img/ca4_%s_resolution_etaregion%s.png" % ( obs, etaregion )
-imgname = "img/ca4_%s_resolution.png" % ( obs )
+imgname = "img/resolution_akt10_%s.png" % ( obs )
 c.SaveAs( imgname )

@@ -8,9 +8,11 @@ INPUTFILE=$1
 ./plot_response_largeR.py pT ${INPUTFILE} &
 ./plot_response_largeR.py M  ${INPUTFILE} &
 ./plot_response_largeR.py eta ${INPUTFILE} &
+wait
 
 ./plot_resolution.py E  ${INPUTFILE} &
 ./plot_resolution.py pT ${INPUTFILE} &
+./plot_resolution.py eta  ${INPUTFILE} &
 ./plot_resolution.py M  ${INPUTFILE} &
 
 wait
