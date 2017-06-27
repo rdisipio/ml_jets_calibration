@@ -24,7 +24,7 @@ except:
 import numpy as np
 import pandas as pd
 
-#from ROOT import *
+from ROOT import TLorentzVector
 
 np.set_printoptions( precision=2, suppress=True )
 
@@ -41,6 +41,8 @@ callbacks_list = [ early_stopping ]
 from models import *
 from features import *
 
+#########
+
 training_filename = sys.argv[1]
 
 # Set up scalers
@@ -54,7 +56,7 @@ print "INFO: X_scaler loaded from file", filename_scaler
 df_training = pd.read_csv( training_filename, delimiter=',', names=header )
 
 X_train_all = df_training[features_all].values
-X_train_all = X_scaler.fit_transform( X_train_all )
+X_train_all = X_scaler.transform( X_train_all )
 
 # Create autoencoder
 n_input_all = len( features_all )
@@ -73,24 +75,102 @@ y_train_all = df_training[ [ "jet_truth_Pt", "jet_truth_Eta", "jet_truth_E", "je
 y_scaler = StandardScaler()
 y_train_all = y_scaler.fit_transform( y_train_all )
 
-def create_model_calib4():
+def create_model_calib_4():
    input_calib = Input( shape=(encoding_dim, ))
+
    dnn_calib   = Dense( 500, activation='tanh' )(input_calib)
-   dnn_calib   = Dense( 400, activation='tanh' )(dnn_calib)
    dnn_calib   = Dense( 300, activation='tanh' )(dnn_calib)
    dnn_calib   = Dense( 200, activation='tanh' )(dnn_calib)
-   dnn_calib   = Dense( 100, activation='tanh' )(dnn_calib)
    dnn_calib   = Dense(   4 )(dnn_calib)
    dnn_model   = Model( inputs=input_calib, outputs=dnn_calib )
-#   dnn_model.compile( optimizer='adam', loss='mean_squared_error' )
-   dnn_model.compile( optimizer='adam', loss='mean_absolute_error' )
+
+   dnn_model.compile( optimizer='adam', loss='mean_squared_error' )
+#   dnn_model.compile( optimizer='adam', loss='mean_absolute_error' )
+   print "INFO: DNN calibration model compiled"
+   return dnn_model
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+def create_model_calib_4x1():
+   input_calib = Input( shape=(encoding_dim, ))
+
+   dnn_calib_pT = Dense( 300, activation='linear' )(input_calib)
+#   dnn_calib_pT = Dropout(0.1)(input_calib)
+#   dnn_calib_pT = Dense( 300, activation='relu' )(dnn_calib_pT)
+   dnn_calib_pT = Dense( 200, activation='relu' )(dnn_calib_pT)
+   dnn_calib_pT = Dense( 100, activation='relu' )(dnn_calib_pT)
+   dnn_calib_pT = Dense(  10, activation='relu' )(dnn_calib_pT)
+   dnn_calib_pT = Dense(1)(dnn_calib_pT)
+
+   dnn_calib_eta  = Dense( 300, activation='linear' )(input_calib)
+#   dnn_calib_eta  = Dropout(0.5)(input_calib)
+   dnn_calib_eta  = Dense( 200, activation='relu' )(dnn_calib_eta)
+   dnn_calib_eta  = Dense( 100, activation='relu' )(dnn_calib_eta)
+   dnn_calib_eta  = Dense(  10, activation='relu' )(dnn_calib_eta)
+   dnn_calib_eta  = Dense(   1 )(dnn_calib_eta)
+
+   dnn_calib_E  = Dense( 300, activation='linear' )(input_calib)
+#   dnn_calib_E  = Dropout(0.1)(input_calib)
+   dnn_calib_E  = Dense( 200, activation='relu' )(dnn_calib_E)
+   dnn_calib_E  = Dense( 100, activation='relu' )(dnn_calib_E)
+   dnn_calib_E  = Dense(  10, activation='relu' )(dnn_calib_E)
+   dnn_calib_E  = Dense(   1 )(dnn_calib_E)
+
+   dnn_calib_M  = Dense( 300, activation='linear' )(input_calib)
+#   dnn_calib_M  = Dropout(0.1)(input_calib)
+#   dnn_calib_M  = Dense( 300, activation='relu' )(dnn_calib_M)
+   dnn_calib_M  = Dense( 200, activation='relu' )(dnn_calib_M)
+   dnn_calib_M  = Dense( 100, activation='relu' )(dnn_calib_M)
+   dnn_calib_M  = Dense(  10, activation='relu' )(dnn_calib_M)
+   dnn_calib_M  = Dense(   1 )(dnn_calib_M)
+
+#   convert_input = Input( shape=(3,) )
+#   x = Dense(20, activation="linear")(convert_input)
+#   x = Dense(15, activation="linear")(x)
+#   x = Dense(10, activation="linear")(x)
+#   x = Dense( 6, activation="linear")(x)
+#   convert_output = Dense(4)(x)
+#   converter = Model( convert_input, convert_output )
+
+   dnn_calib_pT_eta_E = concatenate( [ dnn_calib_pT, dnn_calib_eta, dnn_calib_E ] )
+   dnn_calib_pT_eta_E = Dense(3)(dnn_calib_pT_eta_E)
+#   dnn_calib_pT_eta_E = Dense(3)(dnn_calib_pT_eta_E)
+#   dnn_calib_pT_eta_E = Dense(3)(dnn_calib_pT_eta_E)
+#   dnn_calib_pT_eta_E = converter(dnn_calib_pT_eta_E)
+
+   dnn_calib_pT_eta_M = concatenate( [ dnn_calib_pT, dnn_calib_eta, dnn_calib_M ] )
+   dnn_calib_pT_eta_M = Dense(3)(dnn_calib_pT_eta_M)
+#   dnn_calib_pT_eta_M = Dense(3)(dnn_calib_pT_eta_M)
+#   dnn_calib_pT_eta_M = Dense(3)(dnn_calib_pT_eta_M)
+#   dnn_calib_pT_eta_M = converter(dnn_calib_pT_eta_M)
+
+#   dnn_calib_pT_eta_E_M = concatenate( [ dnn_calib_pT, dnn_calib_eta, dnn_calib_E, dnn_calib_M ] )
+#   dnn_calib_pT_eta_E_M = concatenate( [ dnn_calib_pT_eta_E, dnn_calib_M ] )
+   dnn_calib_pT_eta_E_M = concatenate( [ dnn_calib_pT_eta_E, dnn_calib_pT_eta_M ] )
+#   dnn_calib_pT_eta_E_M = average( [ dnn_calib_pT_eta_E, dnn_calib_pT_eta_M ] )
+#   dnn_calib_pT_eta_E_M = maximum( [ dnn_calib_pT_eta_E, dnn_calib_pT_eta_M ] )
+#   dnn_calib_pT_eta_E_M = Dense(4)(dnn_calib_pT_eta_E_M)
+#   dnn_calib_pT_eta_E_M = Dense(4)(dnn_calib_pT_eta_E_M)
+#   dnn_calib_pT_eta_E_M = Dense(4)(dnn_calib_pT_eta_E_M)
+#   dnn_calib_pT_eta_E_M = Dense(4)(dnn_calib_pT_eta_E_M)
+   dnn_calib_pT_eta_E_M = Dense(6)(dnn_calib_pT_eta_E_M)
+   dnn_calib_pT_eta_E_M = Dense(5)(dnn_calib_pT_eta_E_M)
+   dnn_calib_pT_eta_E_M = Dense(4)(dnn_calib_pT_eta_E_M)
+
+   calibrated = Dense( 4, activation='linear', name='calibrated' )(dnn_calib_pT_eta_E_M)
+
+   dnn_model  = Model( inputs=input_calib, outputs=calibrated )
+
+   dnn_model.compile( optimizer='adam', loss='mean_squared_error' )
+#   dnn_model.compile( optimizer='adam', loss='mean_absolute_error' )
    print "INFO: DNN calibration model compiled"
    return dnn_model
 
 BATCH_SIZE = 1000
-MAX_EPOCHS = 10
+MAX_EPOCHS = 20
 print "INFO: creating calibration DNN"
-dnn = KerasRegressor( build_fn=create_model_calib4, epochs=MAX_EPOCHS, batch_size=BATCH_SIZE, validation_split=0.05, callbacks=callbacks_list, verbose=1 )
+#dnn = KerasRegressor( build_fn=create_model_calib_4, epochs=MAX_EPOCHS, batch_size=BATCH_SIZE, validation_split=0.05, callbacks=callbacks_list, verbose=1 )
+dnn = KerasRegressor( build_fn=create_model_calib_4x1, epochs=MAX_EPOCHS, batch_size=BATCH_SIZE, validation_split=0.05, callbacks=callbacks_list, verbose=1 )
 dnn.fit( X_train_all_encoded, y_train_all )
 
 model_filename = "model.calib4.h5" 

@@ -17,44 +17,45 @@ wait
 
 wait
 
-for i in $(seq 0 4)
-do
-  for obs in pT E M
-  do
-     ./plot_response.py $obs ptbin_$i ${INPUTFILE}  &
-  done
-  wait
-done
-
-for i in $(seq 0 11)
-do
-  for obs in pT E M
-  do
-   ./plot_response.py $obs etabin_$i ${INPUTFILE} &
-  done
-  wait
-done
-
-for i in $(seq 0 4)
-do
-  for obs in pT E M
-  do
-   ./plot_response.py $obs massbin_$i ${INPUTFILE} &
-  done
-  wait
-done
-
 
 
 seq 0 4 | parallel -j 8 ./plot_response.py pT ptbin_{} ${INPUTFILE}
 seq 0 4 | parallel -j 8 ./plot_response.py E  ptbin_{} ${INPUTFILE}
 seq 0 4 | parallel -j 8 ./plot_response.py M  ptbin_{} ${INPUTFILE}
 
-seq 0 11 | parallel -j 8 ./plot_response.py pT etabin_{} ${INPUTFILE}
-seq 0 11 | parallel -j 8 ./plot_response.py E  etabin_{} ${INPUTFILE}
-seq 0 11 | parallel -j 8 ./plot_response.py M  etabin_{} ${INPUTFILE}
+seq 0 3 | parallel -j 8 ./plot_response.py pT etabin_{} ${INPUTFILE}
+seq 0 3 | parallel -j 8 ./plot_response.py E  etabin_{} ${INPUTFILE}
+seq 0 3 | parallel -j 8 ./plot_response.py M  etabin_{} ${INPUTFILE}
 
 seq 0 4 | parallel -j 8 ./plot_response.py pT massbin_{} ${INPUTFILE}
 seq 0 4 | parallel -j 8 ./plot_response.py E  massbin_{} ${INPUTFILE}
 seq 0 4 | parallel -j 8 ./plot_response.py M  massbin_{} ${INPUTFILE}
+
+
+#for i in $(seq 0 4)
+#do
+#  for obs in pT E M
+#  do
+#     ./plot_response.py $obs ptbin_$i ${INPUTFILE}  &
+#  done
+#  wait
+#done
+
+#for i in $(seq 0 11)
+#do
+#  for obs in pT E M
+#  do
+#   ./plot_response.py $obs etabin_$i ${INPUTFILE} &
+#  done
+#  wait
+#done
+
+#for i in $(seq 0 4)
+#do
+#  for obs in pT E M
+#  do
+#   ./plot_response.py $obs massbin_$i ${INPUTFILE} &
+#  done
+#  wait
+#done
 

@@ -10,7 +10,8 @@ SetAtlasStyle()
 
 gROOT.SetBatch(1)
 
-etaregions = [ [0.0,0.1], [0.1,0.2], [0.2,0.3], [0.3,0.4], [0.4,0.5], [0.5,0.6], [0.6,0.7], [0.7,0.8], [0.8,0.9], [0.9,1.0], [1.0,2.5] ]
+#etaregions = [ [0.0,0.1], [0.1,0.2], [0.2,0.3], [0.3,0.4], [0.4,0.5], [0.5,0.6], [0.6,0.7], [0.7,0.8], [0.8,0.9], [0.9,1.0], [1.0,2.5] ]
+etaregions  = [ [0.0, 0.2], [0.2, 0.5], [0.5, 1.0], [1.0,2.0] ]
 
 def SetTH1FStyle( h, color = kBlack, linewidth = 1, fillcolor = 0, fillstyle = 0, markerstyle = 21, markersize = 1.3, linestyle=kSolid ):
     '''Set the style with a long list of parameters'''

@@ -52,8 +52,8 @@ X_train_all = X_scaler.fit_transform( X_train_all )
 
 # Create autoencoder
 n_input_all = len( features_all )
-encoding_dim = 12
-print "INFO: creating autoencoder %i -> %i ->%i" % ( n_input_all, encoding_dim, n_input_all )
+encoding_dim = 15
+print "INFO: creating autoencoder %i -> %i -> %i" % ( n_input_all, encoding_dim, n_input_all )
 
 encoder_input = Input( shape=(n_input_all,) )
 
@@ -61,11 +61,11 @@ encoder_input = Input( shape=(n_input_all,) )
 #encoded = Dense( encoding_dim )(encoder_input)
 #decoded = Dense(  n_input_all )(encoded)
 
-encoded = Dense( 23, activation='tanh' )(encoder_input)
-encoded = Dense( 18, activation='tanh' )(encoded)
+encoded = Dense( 20, activation='tanh' )(encoder_input)
+encoded = Dense( 15, activation='tanh' )(encoded)
 encoded = Dense( encoding_dim, activation='tanh' )(encoded)
-decoded = Dense( 18, activation='tanh' )(encoded)
-decoded = Dense( 23, activation='tanh' )(decoded)
+decoded = Dense( 15, activation='tanh' )(encoded)
+decoded = Dense( 20, activation='tanh' )(decoded)
 decoded = Dense(    n_input_all )(decoded)
 
 autoencoder = Model( inputs=encoder_input, outputs=decoded)
@@ -92,3 +92,4 @@ print "INFO: X_scaler saved to file:", scaler_filename
 X_train_all_encoded = encoder.predict(X_train_all)
 print "INFO: example of compressed data:"
 print X_train_all_encoded
+

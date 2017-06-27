@@ -30,9 +30,9 @@ features_all = [
  "jet_nocalib_Nconstit",        "jet_nocalib_width",
 # "jet_nocalib_Nconstit_over_m", "jet_nocalib_width_over_m",
  "jet_nocalib_D2", "jet_nocalib_C2",
-# "jet_nocalib_Tau1_wta", "jet_nocalib_Tau2_wta", "jet_nocalib_Tau3_wta",
- "jet_nocalib_Tau21_wta", "jet_nocalib_Tau32_wta",
- "jet_nocalib_Angularity", "jet_nocalib_Aplanarity", "jet_nocalib_PlanarFlow", "jet_nocalib_Sphericity",
+ "jet_nocalib_Tau1_wta", "jet_nocalib_Tau2_wta", "jet_nocalib_Tau3_wta",
+# "jet_nocalib_Tau21_wta", "jet_nocalib_Tau32_wta",
+# "jet_nocalib_Angularity", "jet_nocalib_Aplanarity", "jet_nocalib_PlanarFlow", "jet_nocalib_Sphericity",
 ]
 
 # transverse momentum

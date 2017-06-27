@@ -1,8 +1,10 @@
+from keras.models import load_model
 from keras.models import Model, Sequential
 from keras.layers import Merge, Dense, Activation, Input
 from keras.layers import Lambda
 from keras.layers import Dropout
-from keras.layers import concatenate
+from keras.layers import concatenate, maximum, dot, average
+from keras.layers.pooling import MaxPooling1D
 from keras.layers.normalization import BatchNormalization
 from keras.layers.advanced_activations import ELU
 from keras.layers.merge import *
