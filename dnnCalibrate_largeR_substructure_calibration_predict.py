@@ -31,7 +31,7 @@ np.set_printoptions( precision=2, suppress=True )
 etabins  = [ [0.0, 0.2], [0.2, 0.5], [0.5, 1.0], [1.0,2.0] ]
 ptbins   = [ [250., 350.], [350., 500.], [500.,600.], [600.,800.], [800.,1200.] ]
 Ebins    = [ [0., 200.], [200.,400.], [400.,600.], [600.,800.], [800.,1000.],[1000.,1500.] ]
-massbins = [ [30., 60.], [ 60., 110.], [110.,140], [140,200], [200,300] ] 
+massbins = [ [10., 50.], [ 50., 110.], [110.,140], [140,200], [200,300] ] 
 #                LOW          W/Z            H          t       QCD          
 
 #################
@@ -91,6 +91,7 @@ filename_scaler = "scaler.largeR_substructure.pkl"
 with open( filename_scaler, "rb" ) as file_scaler:
   X_scaler = pickle.load( file_scaler )
   y_scaler = pickle.load( file_scaler )
+print "INFO: scalers load from file", filename_scaler
 
 testing_filename  = sys.argv[1]
 

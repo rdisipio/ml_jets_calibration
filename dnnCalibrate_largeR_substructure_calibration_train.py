@@ -6,8 +6,7 @@ from keras.models import load_model
 
 from keras.optimizers import SGD
 
-from keras.callbacks import EarlyStopping
-from keras.callbacks import ModelCheckpoint
+from keras.callbacks import EarlyStopping, ModelCheckpoint, ReduceLROnPlateau
 
 from sklearn.preprocessing import PolynomialFeatures
 from sklearn.preprocessing import StandardScaler, RobustScaler, MinMaxScaler
@@ -28,14 +27,6 @@ from ROOT import TLorentzVector
 
 np.set_printoptions( precision=2, suppress=True )
 
-
-early_stopping = EarlyStopping( monitor='val_loss', patience=3, mode='min' )
-
-#checkpoint = ModelCheckpoint( "checkpoint.h5", monitor='val_acc', verbose=1, save_best_only=True, mode='max')
-#callbacks_list = [checkpoint]
-callbacks_list = [ early_stopping ]
-#callbacks_list = []
-
 #################
 
 from models import *
@@ -45,42 +36,68 @@ from features import *
 
 training_filename = sys.argv[1]
 
-# Set up scalers
-filename_scaler = "X_scaler.pkl"
-with open( filename_scaler, "rb" ) as file_scaler:
-   X_scaler = pickle.load( file_scaler )
-
-print "INFO: X_scaler loaded from file", filename_scaler
-
 # read in input file
 df_training = pd.read_csv( training_filename, delimiter=',', names=header )
 
 X_train_all = df_training[features_all].values
-X_train_all = X_scaler.transform( X_train_all )
-
-# Create autoencoder
 n_input_all = len( features_all )
-encoder = load_model( "encoder.h5" )
-encoding_dim = encoder.layers[-1].output_shape[1]
-print "INFO: loaded encoder %i -> %i" % ( n_input_all, encoding_dim )
 
-# these are the compressed data
-X_train_all_encoded = encoder.predict(X_train_all)
+if os.environ.has_key('USE_AUTOENCODER'):
+   # Set up scalers
+   filename_scaler = "X_scaler.pkl"
+   with open( filename_scaler, "rb" ) as file_scaler:
+      X_scaler = pickle.load( file_scaler )
+   print "INFO: X_scaler loaded from file", filename_scaler
+
+   # Create autoencoder
+   encoder = load_model( "encoder.h5" )
+   encoding_dim = encoder.layers[-1].output_shape[1]
+   print "INFO: loaded encoder %i -> %i" % ( n_input_all, encoding_dim )
+
+   # these are the compressed data
+   X_train_all = X_scaler.transform( X_train_all )
+   X_train_all_encoded = encoder.predict(X_train_all)
+
+if os.environ.has_key('USE_PCA'):
+   # apply PCA
+   X_scaler = StandardScaler()
+   X_train_all = X_scaler.fit_transform( X_train_all )
+  
+   print "INFO: Applying PCA"
+   from sklearn.decomposition import PCA
+   encoding_dim = 15
+   pca = PCA(n_components=encoding_dim)
+   X_train_all_encoded = pca.fit_transform(X_train_all)
+
 print "INFO: example of compressed data:"
 print X_train_all_encoded
 
 # now calibrate jets
 y_train_all = df_training[ [ "jet_truth_Pt", "jet_truth_Eta", "jet_truth_E", "jet_truth_M" ] ].values
+y_weight_mc = df_training[ "mc_Weight" ].values
 
 y_scaler = StandardScaler()
 y_train_all = y_scaler.fit_transform( y_train_all )
 
+# Apply oversampling/SMOTE
+if os.environ.has_key('APPLY_SMOTE'):
+   try:
+      from imblearn.over_sampling import SMOTE, RandomOverSampler
+   except:
+      print "ERROR: imblearn library not installed. See page http://contrib.scikit-learn.org/imbalanced-learn/"
+   sm = SMOTE(kind='regular')
+   X_train_all_encoded, y_train_all = sm.fit_sample( X_train_all_encoded, y_train_all )
+
+#~~~~~~~~~
+
 def create_model_calib_4():
    input_calib = Input( shape=(encoding_dim, ))
 
-   dnn_calib   = Dense( 500, activation='tanh' )(input_calib)
-   dnn_calib   = Dense( 300, activation='tanh' )(dnn_calib)
-   dnn_calib   = Dense( 200, activation='tanh' )(dnn_calib)
+   dnn_calib   = Dense( 500, activation='relu' )(input_calib)
+   dnn_calib   = Dense( 300, activation='relu' )(dnn_calib)
+   dnn_calib   = Dense( 200, activation='relu' )(dnn_calib)
+   dnn_calib   = Dense( 100, activation='relu' )(dnn_calib)
+   dnn_calib   = Dense(  50, activation='relu' )(dnn_calib)
    dnn_calib   = Dense(   4 )(dnn_calib)
    dnn_model   = Model( inputs=input_calib, outputs=dnn_calib )
 
@@ -94,68 +111,67 @@ def create_model_calib_4():
 def create_model_calib_4x1():
    input_calib = Input( shape=(encoding_dim, ))
 
-   dnn_calib_pT = Dense( 300, activation='linear' )(input_calib)
-#   dnn_calib_pT = Dropout(0.1)(input_calib)
-#   dnn_calib_pT = Dense( 300, activation='relu' )(dnn_calib_pT)
-   dnn_calib_pT = Dense( 200, activation='relu' )(dnn_calib_pT)
-   dnn_calib_pT = Dense( 100, activation='relu' )(dnn_calib_pT)
-   dnn_calib_pT = Dense(  10, activation='relu' )(dnn_calib_pT)
+   dnn_calib_pT = Dense( 500 )(input_calib)
+   dnn_calib_pT = Activation('relu')(dnn_calib_pT)
+   dnn_calib_pT = Dense( 300)(dnn_calib_pT) 
+   dnn_calib_pT = Activation('relu')(dnn_calib_pT)
+   dnn_calib_pT = Dense( 100)(dnn_calib_pT)
+   dnn_calib_pT = Activation('relu')(dnn_calib_pT)
+   dnn_calib_pT = Dense(  50)(dnn_calib_pT)
+   dnn_calib_pT = Activation('relu')(dnn_calib_pT)
    dnn_calib_pT = Dense(1)(dnn_calib_pT)
 
-   dnn_calib_eta  = Dense( 300, activation='linear' )(input_calib)
-#   dnn_calib_eta  = Dropout(0.5)(input_calib)
-   dnn_calib_eta  = Dense( 200, activation='relu' )(dnn_calib_eta)
-   dnn_calib_eta  = Dense( 100, activation='relu' )(dnn_calib_eta)
-   dnn_calib_eta  = Dense(  10, activation='relu' )(dnn_calib_eta)
-   dnn_calib_eta  = Dense(   1 )(dnn_calib_eta)
+   dnn_calib_eta = Dense( 500 )(input_calib)
+   dnn_calib_eta = Activation('relu')(dnn_calib_eta)
+   dnn_calib_eta = Dense( 300)(dnn_calib_eta)
+   dnn_calib_eta = Activation('relu')(dnn_calib_eta)
+   dnn_calib_eta = Dense( 100)(dnn_calib_eta)
+   dnn_calib_eta = Activation('relu')(dnn_calib_eta)
+   dnn_calib_eta = Dense(  50)(dnn_calib_eta)
+   dnn_calib_eta = Activation('relu')(dnn_calib_eta)
+   dnn_calib_eta = Dense(1)(dnn_calib_eta)
 
-   dnn_calib_E  = Dense( 300, activation='linear' )(input_calib)
-#   dnn_calib_E  = Dropout(0.1)(input_calib)
-   dnn_calib_E  = Dense( 200, activation='relu' )(dnn_calib_E)
-   dnn_calib_E  = Dense( 100, activation='relu' )(dnn_calib_E)
-   dnn_calib_E  = Dense(  10, activation='relu' )(dnn_calib_E)
-   dnn_calib_E  = Dense(   1 )(dnn_calib_E)
+   dnn_calib_E = Dense( 500 )(input_calib)
+   dnn_calib_E = Activation('relu')(dnn_calib_E)
+   dnn_calib_E = Dense( 300)(dnn_calib_E)
+   dnn_calib_E = Activation('relu')(dnn_calib_E)
+   dnn_calib_E = Dense( 100)(dnn_calib_E)
+   dnn_calib_E = Activation('relu')(dnn_calib_E)
+   dnn_calib_E = Dense(  50)(dnn_calib_E)
+   dnn_calib_E = Activation('relu')(dnn_calib_E)
+   dnn_calib_E = Dense(1)(dnn_calib_E)
 
-   dnn_calib_M  = Dense( 300, activation='linear' )(input_calib)
-#   dnn_calib_M  = Dropout(0.1)(input_calib)
-#   dnn_calib_M  = Dense( 300, activation='relu' )(dnn_calib_M)
-   dnn_calib_M  = Dense( 200, activation='relu' )(dnn_calib_M)
-   dnn_calib_M  = Dense( 100, activation='relu' )(dnn_calib_M)
-   dnn_calib_M  = Dense(  10, activation='relu' )(dnn_calib_M)
-   dnn_calib_M  = Dense(   1 )(dnn_calib_M)
-
-#   convert_input = Input( shape=(3,) )
-#   x = Dense(20, activation="linear")(convert_input)
-#   x = Dense(15, activation="linear")(x)
-#   x = Dense(10, activation="linear")(x)
-#   x = Dense( 6, activation="linear")(x)
-#   convert_output = Dense(4)(x)
-#   converter = Model( convert_input, convert_output )
+   dnn_calib_M = Dense( 500 )(input_calib)
+   dnn_calib_M = Activation('relu')(dnn_calib_M)
+   dnn_calib_M = Dense( 300)(dnn_calib_M)
+   dnn_calib_M = Activation('relu')(dnn_calib_M)
+   dnn_calib_M = Dense( 100)(dnn_calib_M)
+   dnn_calib_M = Activation('relu')(dnn_calib_M)
+   dnn_calib_M = Dense(  50)(dnn_calib_M)
+   dnn_calib_M = Activation('relu')(dnn_calib_M)
+   dnn_calib_M = Dense(1)(dnn_calib_M)
 
    dnn_calib_pT_eta_E = concatenate( [ dnn_calib_pT, dnn_calib_eta, dnn_calib_E ] )
-   dnn_calib_pT_eta_E = Dense(3)(dnn_calib_pT_eta_E)
-#   dnn_calib_pT_eta_E = Dense(3)(dnn_calib_pT_eta_E)
-#   dnn_calib_pT_eta_E = Dense(3)(dnn_calib_pT_eta_E)
-#   dnn_calib_pT_eta_E = converter(dnn_calib_pT_eta_E)
-
+#   dnn_calib_pT_eta_E = Dense(6, activation='linear')(dnn_calib_pT_eta_E)
+#   dnn_calib_pT_eta_E = Dense(6, activation='linear')(dnn_calib_pT_eta_E)
+#   dnn_calib_pT_eta_E = Dense(6, activation='linear')(dnn_calib_pT_eta_E)
+ 
    dnn_calib_pT_eta_M = concatenate( [ dnn_calib_pT, dnn_calib_eta, dnn_calib_M ] )
-   dnn_calib_pT_eta_M = Dense(3)(dnn_calib_pT_eta_M)
-#   dnn_calib_pT_eta_M = Dense(3)(dnn_calib_pT_eta_M)
-#   dnn_calib_pT_eta_M = Dense(3)(dnn_calib_pT_eta_M)
-#   dnn_calib_pT_eta_M = converter(dnn_calib_pT_eta_M)
+#   dnn_calib_pT_eta_M = Dense(6, activation='linear')(dnn_calib_pT_eta_M)
+#   dnn_calib_pT_eta_M = Dense(6, activation='linear')(dnn_calib_pT_eta_M)
+#   dnn_calib_pT_eta_M = Dense(6, activation='linear')(dnn_calib_pT_eta_M)
+
+   dnn_calib_pT_eta_E_M = concatenate( [ dnn_calib_pT_eta_E, dnn_calib_pT_eta_M ] )
+#   dnn_calib_pT_eta_E_M = Dense(4, activation='linear')(dnn_calib_pT_eta_E_M)
+#   dnn_calib_pT_eta_E_M = Dense(200, activation='linear')(dnn_calib_pT_eta_E_M)
+#   dnn_calib_pT_eta_E_M = Dense(100, activation='linear')(dnn_calib_pT_eta_E_M)
+#   dnn_calib_pT_eta_E_M = Dense(4)(dnn_calib_pT_eta_E_M)
 
 #   dnn_calib_pT_eta_E_M = concatenate( [ dnn_calib_pT, dnn_calib_eta, dnn_calib_E, dnn_calib_M ] )
 #   dnn_calib_pT_eta_E_M = concatenate( [ dnn_calib_pT_eta_E, dnn_calib_M ] )
-   dnn_calib_pT_eta_E_M = concatenate( [ dnn_calib_pT_eta_E, dnn_calib_pT_eta_M ] )
+
 #   dnn_calib_pT_eta_E_M = average( [ dnn_calib_pT_eta_E, dnn_calib_pT_eta_M ] )
 #   dnn_calib_pT_eta_E_M = maximum( [ dnn_calib_pT_eta_E, dnn_calib_pT_eta_M ] )
-#   dnn_calib_pT_eta_E_M = Dense(4)(dnn_calib_pT_eta_E_M)
-#   dnn_calib_pT_eta_E_M = Dense(4)(dnn_calib_pT_eta_E_M)
-#   dnn_calib_pT_eta_E_M = Dense(4)(dnn_calib_pT_eta_E_M)
-#   dnn_calib_pT_eta_E_M = Dense(4)(dnn_calib_pT_eta_E_M)
-   dnn_calib_pT_eta_E_M = Dense(6)(dnn_calib_pT_eta_E_M)
-   dnn_calib_pT_eta_E_M = Dense(5)(dnn_calib_pT_eta_E_M)
-   dnn_calib_pT_eta_E_M = Dense(4)(dnn_calib_pT_eta_E_M)
 
    calibrated = Dense( 4, activation='linear', name='calibrated' )(dnn_calib_pT_eta_E_M)
 
@@ -166,15 +182,24 @@ def create_model_calib_4x1():
    print "INFO: DNN calibration model compiled"
    return dnn_model
 
-BATCH_SIZE = 1000
+BATCH_SIZE = 5000
 MAX_EPOCHS = 20
+model_filename = "model.calib4.h5" 
+
+callbacks_list = [ 
+   # val_loss
+   ReduceLROnPlateau(monitor='loss', factor=0.2, patience=3, min_lr=0.001, verbose=1), 
+   EarlyStopping( monitor='loss', patience=3, mode='min', verbose=1 ),
+#   ModelCheckpoint( model_filename + "-{epoch:02d}-{val_loss:.4f}.h5", monitor='val_loss', mode='min', save_best_only=True, verbose=0), 
+   ModelCheckpoint( model_filename, monitor='loss', mode='min', save_best_only=True, verbose=0),
+]
+
 print "INFO: creating calibration DNN"
 #dnn = KerasRegressor( build_fn=create_model_calib_4, epochs=MAX_EPOCHS, batch_size=BATCH_SIZE, validation_split=0.05, callbacks=callbacks_list, verbose=1 )
-dnn = KerasRegressor( build_fn=create_model_calib_4x1, epochs=MAX_EPOCHS, batch_size=BATCH_SIZE, validation_split=0.05, callbacks=callbacks_list, verbose=1 )
+dnn = KerasRegressor( build_fn=create_model_calib_4x1, epochs=MAX_EPOCHS, batch_size=BATCH_SIZE, validation_split=0.05, callbacks=callbacks_list, sample_weight=y_weight_mc, verbose=1 )
 dnn.fit( X_train_all_encoded, y_train_all )
 
-model_filename = "model.calib4.h5" 
-dnn.model.save( model_filename )
+#dnn.model.save( model_filename )
 
 scaler_filename = "scaler.largeR_substructure.pkl"
 with open( scaler_filename, "wb" ) as file_scaler:
