@@ -182,8 +182,8 @@ def create_model_calib_4x1():
    print "INFO: DNN calibration model compiled"
    return dnn_model
 
-BATCH_SIZE = 50000
-MAX_EPOCHS = 20
+BATCH_SIZE = 10000
+MAX_EPOCHS = 50
 model_filename = "model.calib4.h5" 
 
 callbacks_list = [ 
@@ -196,7 +196,7 @@ callbacks_list = [
 
 print "INFO: creating calibration DNN"
 #dnn = KerasRegressor( build_fn=create_model_calib_4, epochs=MAX_EPOCHS, batch_size=BATCH_SIZE, validation_split=0.05, callbacks=callbacks_list, sample_weight=y_weight_mc, verbose=1 )
-dnn = KerasRegressor( build_fn=create_model_calib_4x1, epochs=MAX_EPOCHS, batch_size=BATCH_SIZE, validation_split=0.05, callbacks=callbacks_list, sample_weight=y_weight_mc, verbose=1 )
+dnn = KerasRegressor( build_fn=create_model_calib_4x1, epochs=MAX_EPOCHS, batch_size=BATCH_SIZE, validation_split=0.05, callbacks=callbacks_list, verbose=1, sample_weight=y_weight_mc )
 dnn.fit( X_train_all_encoded, y_train_all )
 
 #dnn.model.save( model_filename )

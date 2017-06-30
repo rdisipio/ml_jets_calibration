@@ -40,7 +40,8 @@ sumw = {
 
 sample_weight = {}
 for dsid in sumw.keys():
-  sample_weight[dsid] = iLumi * xsec[dsid] / float(sumw[dsid])
+  sample_weight[dsid] = xsec[dsid] 
+#  sample_weight[dsid] = iLumi * xsec[dsid] / float(sumw[dsid])
     
 def DumpFourVector( p ):
   print "(pT,eta,phi,E;M) = ( %4.1f, %4.3f, %4.3f, %4.1f ; %4.1f )" % ( p.Pt(), p.Eta(), p.Phi(), p.E(), p.M() )
