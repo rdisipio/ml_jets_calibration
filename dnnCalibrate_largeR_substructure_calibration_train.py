@@ -182,7 +182,7 @@ def create_model_calib_4x1():
    print "INFO: DNN calibration model compiled"
    return dnn_model
 
-BATCH_SIZE = 5000
+BATCH_SIZE = 50000
 MAX_EPOCHS = 20
 model_filename = "model.calib4.h5" 
 
@@ -191,11 +191,11 @@ callbacks_list = [
    ReduceLROnPlateau(monitor='loss', factor=0.2, patience=3, min_lr=0.001, verbose=1), 
    EarlyStopping( monitor='loss', patience=3, mode='min', verbose=1 ),
 #   ModelCheckpoint( model_filename + "-{epoch:02d}-{val_loss:.4f}.h5", monitor='val_loss', mode='min', save_best_only=True, verbose=0), 
-   ModelCheckpoint( model_filename, monitor='loss', mode='min', save_best_only=True, verbose=0),
+   ModelCheckpoint( model_filename, monitor='loss', mode='min', save_best_only=True, verbose=1),
 ]
 
 print "INFO: creating calibration DNN"
-#dnn = KerasRegressor( build_fn=create_model_calib_4, epochs=MAX_EPOCHS, batch_size=BATCH_SIZE, validation_split=0.05, callbacks=callbacks_list, verbose=1 )
+#dnn = KerasRegressor( build_fn=create_model_calib_4, epochs=MAX_EPOCHS, batch_size=BATCH_SIZE, validation_split=0.05, callbacks=callbacks_list, sample_weight=y_weight_mc, verbose=1 )
 dnn = KerasRegressor( build_fn=create_model_calib_4x1, epochs=MAX_EPOCHS, batch_size=BATCH_SIZE, validation_split=0.05, callbacks=callbacks_list, sample_weight=y_weight_mc, verbose=1 )
 dnn.fit( X_train_all_encoded, y_train_all )
 

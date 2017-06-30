@@ -109,14 +109,14 @@ for ientry in range(nentries):
   skip = 0
 
   if jet_truth.Pt() < 200*GeV: skip = 1
-  if jet_truth.Pt() > 1500*GeV: skip = 1
+  if jet_truth.Pt() > 3000*GeV: skip = 1
   if jet_truth.M()  < 30*GeV: skip = 1
   if jet_truth.M()  > 500*GeV: skip = 1
   if jet_truth.E()  > 3000*GeV: skip = 1
   if jet_truth.P()  > 3000*GeV: skip = 1
 
   if jet_nocalib.Pt() < 200*GeV: skip = 1
-  if jet_nocalib.Pt() > 1500*GeV: skip = 1
+  if jet_nocalib.Pt() > 3000*GeV: skip = 1
   if jet_nocalib.M()  < 30*GeV: skip = 1
   if jet_nocalib.M()  > 500*GeV: skip = 1 
   if jet_nocalib.E()  > 3000*GeV: skip = 1
@@ -131,7 +131,6 @@ for ientry in range(nentries):
   if jet_track.M() > 500*GeV: skip = 1
   if jet_track.E() > 3000*GeV: skip = 1
   if jet_track.P() > 3000*GeV: skip = 1
-
 
   if not skip == 0: continue
 

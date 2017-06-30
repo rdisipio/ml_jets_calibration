@@ -30,7 +30,7 @@ features_all = [
  "jet_nocalib_Pt", "jet_nocalib_Eta", "jet_nocalib_E", "jet_nocalib_P", "jet_nocalib_M",
  "jet_nocalib_m_over_pt", 
 # "jet_track_Pt", "jet_track_Eta", "jet_track_E", "jet_track_P", "jet_track_M",
-# "jet_track_Eta", "jet_track_M",
+  "jet_track_Eta", "jet_track_M",
 # "jet_track_Eta", 
  "jet_track_m_over_pt",  "jet_nocalib_mTA",
  "jet_nocalib_Nconstit",        "jet_nocalib_width",
