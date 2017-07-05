@@ -31,9 +31,9 @@ from features import *
 training_filename = sys.argv[1]
 
 # Set up scalers
-#create_scaler = StandardScaler
+create_scaler = StandardScaler
 #create_scaler = MinMaxScaler
-create_scaler = RobustScaler
+#create_scaler = RobustScaler
 X_scaler = create_scaler()
 
 # read in input file

@@ -9,6 +9,7 @@ from keras.layers.normalization import BatchNormalization
 from keras.layers.advanced_activations import LeakyReLU, PReLU, ELU
 from keras.layers.merge import *
 from keras.layers.convolutional import Conv1D
+from keras.optimizers import *
 
 from keras.wrappers.scikit_learn import KerasRegressor
 

@@ -148,9 +148,9 @@ h_pT_nocalib  = TH2F( "pT_nocalib_vs_truth", "non-calib vs truth-level;truth-lev
 h_pT_calib    = TH2F( "pT_calib_vs_truth", "calib vs truth-level;truth-level jet p_{T} [GeV];Reco-level calib jet p_{T} [GeV]", 100, pT_min, pT_max, 100, pT_min, pT_max )
 h_pT_dnncalib  = TH2F( "pT_dnncalib_vs_truth", "DNN vs truth-level;truth-level jet p_{T} [GeV];Reco-level DNN jet p_{T} [GeV]", 100, pT_min, pT_max, 100, pT_min, pT_max )
 
-h_eta_nocalib  = TH2F( "eta_nocalib_vs_truth", "non-calib vs truth-level;truth-level jet #eta;Reco-level non-calib jet #eta", 40, eta_min, eta_max, 40, 0., eta_max )
-h_eta_calib    = TH2F( "eta_calib_vs_truth", "calib vs truth-level;truth-level jet #eta;Reco-level calib jet #eta",           40, eta_min, eta_max, 40, 0., eta_max )
-h_eta_dnncalib = TH2F( "eta_dnncalib_vs_truth", "DNN vs truth-level;truth-level jet #eta;Reco-level DNN jet #eta",            40, eta_min, eta_max, 40, 0., eta_max )
+h_eta_nocalib  = TH2F( "eta_nocalib_vs_truth", "non-calib vs truth-level;truth-level jet #eta;Reco-level non-calib jet #eta", 10, 0., eta_max, 20, 0., eta_max )
+h_eta_calib    = TH2F( "eta_calib_vs_truth", "calib vs truth-level;truth-level jet #eta;Reco-level calib jet #eta",           10, 0., eta_max, 20, 0., eta_max )
+h_eta_dnncalib = TH2F( "eta_dnncalib_vs_truth", "DNN vs truth-level;truth-level jet #eta;Reco-level DNN jet #eta",            10, 0., eta_max, 20, 0., eta_max )
 
 h_E_nocalib  = TH2F( "E_nocalib_vs_truth", "non-calib vs truth-level;truth-level jet E [GeV];Reco-level non-calib jet E [GeV]", 150, E_min, E_max, 150, E_min, E_max )
 h_E_calib    = TH2F( "E_calib_vs_truth", "calib vs truth-level;truth-level jet E [GeV];Reco-level calib jet E [GeV]",           150, E_min, E_max, 150, E_min, E_max )
@@ -170,13 +170,13 @@ h_E_response_nocalib  = TH2F( "E_response_nocalib",  "E response non-calib jets;
 h_E_response_calib    = TH2F( "E_response_calib",    "E response calib jets;truth-level jet E [GeV];E^{reco}/E^{truth}",    30, E_min, E_max, 20, 0., 2. )
 h_E_response_dnncalib = TH2F( "E_response_dnncalib", "E response dnn-calib jets;truth-level jet E [GeV];E^{reco}/E^{truth}",30, E_min, E_max, 20, 0., 2. )
 
-h_M_response_calib    = TH2F( "M_response_calib",    "M response calib jets;truth-level jet M [GeV];M^{reco}/M^{truth}",    30, M_min, M_max, 20, 0., 2. )
-h_M_response_nocalib  = TH2F( "M_response_nocalib",  "M response non-calib jets;truth-level jet M [GeV];M^{reco}/M^{truth}",30, M_min, M_max, 20, 0., 2. )
-h_M_response_dnncalib = TH2F( "M_response_dnncalib", "M response dnn-calib jets;truth-level jet M [GeV];M^{reco}/M^{truth}",30, M_min, M_max, 20, 0., 2. )
+h_M_response_calib    = TH2F( "M_response_calib",    "M response calib jets;truth-level jet M [GeV];M^{reco}/M^{truth}",    20, M_min, M_max, 20, 0., 2. )
+h_M_response_nocalib  = TH2F( "M_response_nocalib",  "M response non-calib jets;truth-level jet M [GeV];M^{reco}/M^{truth}",20, M_min, M_max, 20, 0., 2. )
+h_M_response_dnncalib = TH2F( "M_response_dnncalib", "M response dnn-calib jets;truth-level jet M [GeV];M^{reco}/M^{truth}",20, M_min, M_max, 20, 0., 2. )
 
-h_eta_response_calib    = TH2F( "eta_response_calib",    "#eta response calib jets;truth-level jet #eta;#eta^{reco}/#eta^{truth}",     20, -eta_max, eta_max, 20, 0., 2. )
-h_eta_response_nocalib  = TH2F( "eta_response_nocalib",  "#eta response non-calib jets;truth-level jet #eta;#eta^{reco}/#eta^{truth}", 20, -eta_max, eta_max, 20, 0., 2. )
-h_eta_response_dnncalib = TH2F( "eta_response_dnncalib", "#eta response dnn-calib jets;truth-level jet #eta;#eta^{reco}/#eta^{truth}", 20, -eta_max, eta_max, 20, 0., 2. )
+h_eta_response_calib    = TH2F( "eta_response_calib",    "#eta response calib jets;truth-level jet #eta;#eta^{reco}/#eta^{truth}",     10, 0., eta_max, 20, 0., 2. )
+h_eta_response_nocalib  = TH2F( "eta_response_nocalib",  "#eta response non-calib jets;truth-level jet #eta;#eta^{reco}/#eta^{truth}", 10, 0., eta_max, 20, 0., 2. )
+h_eta_response_dnncalib = TH2F( "eta_response_dnncalib", "#eta response dnn-calib jets;truth-level jet #eta;#eta^{reco}/#eta^{truth}", 10, 0., eta_max, 20, 0., 2. )
 
 
 histograms = {}
@@ -361,9 +361,9 @@ for i in range( n_entries ):
   h_E_response_calib.Fill(    E_calib,    E_response_calib, w )
   h_E_response_dnncalib.Fill( E_dnncalib, E_response_dnncalib, w )
 
-  h_eta_response_nocalib.Fill(  eta_nocalib,  eta_response_nocalib, w )
-  h_eta_response_calib.Fill(    eta_calib,    eta_response_calib, w )
-  h_eta_response_dnncalib.Fill( eta_dnncalib, eta_response_dnncalib, w )
+  h_eta_response_nocalib.Fill(  abs(eta_nocalib),  abs(eta_response_nocalib), w )
+  h_eta_response_calib.Fill(    abs(eta_calib),    abs(eta_response_calib), w )
+  h_eta_response_dnncalib.Fill( abs(eta_dnncalib), abs(eta_response_dnncalib), w )
 
   h_M_response_nocalib.Fill(  M_nocalib,  M_response_nocalib, w )
   h_M_response_calib.Fill(    M_calib,    M_response_calib, w )
