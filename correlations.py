@@ -15,12 +15,14 @@ np.set_printoptions( precision=3, suppress=True, linewidth=120 )
 training_filename = sys.argv[1]
 
 df_training = pd.read_csv( training_filename, delimiter=',', names=header )
-X_train_all = df_training[features_all].values
+X_train_all = df_training[features_correlations].values
 
+print "INFO: features used to estimate correlations:"
+print features_correlations
 print X_train_all
 
-n_features = len( features_all )
 n_entries  = len( X_train_all )
+n_features = len( X_train_all[0] )
 
 principal = TPrincipal( n_features )
 print "INFO: looping over %i entries" % n_entries
@@ -59,7 +61,7 @@ h2_corr.SetMaximum(  1.0 )
 h2_corr.SetMinimum( -1.0 )
 
 for k in range(n_features):
-  label = features_all[k]
+  label = features_correlations[k]
   h2_cov.GetXaxis().SetBinLabel( k+1, label )
   h2_cov.GetYaxis().SetBinLabel( k+1, label )
   h2_corr.GetXaxis().SetBinLabel( k+1, label )

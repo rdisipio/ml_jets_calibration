@@ -1,6 +1,6 @@
 from keras.models import load_model
 from keras.models import Model, Sequential
-from keras.layers import Merge, Dense, Activation, Input, LSTM, Permute
+from keras.layers import Merge, Dense, Activation, Input, LSTM, Permute, Reshape
 from keras.layers import Lambda
 from keras.layers import Dropout
 from keras.layers import concatenate, maximum, dot, average

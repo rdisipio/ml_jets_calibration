@@ -19,9 +19,9 @@ wait
 
 
 
-seq 0 4 | parallel -j 8 ./plot_response.py pT ptbin_{} ${INPUTFILE}
-seq 0 4 | parallel -j 8 ./plot_response.py E  ptbin_{} ${INPUTFILE}
-seq 0 4 | parallel -j 8 ./plot_response.py M  ptbin_{} ${INPUTFILE}
+seq 0 5 | parallel -j 8 ./plot_response.py pT ptbin_{} ${INPUTFILE}
+seq 0 5 | parallel -j 8 ./plot_response.py E  ptbin_{} ${INPUTFILE}
+seq 0 5 | parallel -j 8 ./plot_response.py M  ptbin_{} ${INPUTFILE}
 
 seq 0 3 | parallel -j 8 ./plot_response.py pT etabin_{} ${INPUTFILE}
 seq 0 3 | parallel -j 8 ./plot_response.py E  etabin_{} ${INPUTFILE}

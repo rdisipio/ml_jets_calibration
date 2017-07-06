@@ -44,7 +44,7 @@ X_train_all = X_scaler.fit_transform( X_train_all )
 
 # Create autoencoder
 n_input_all = len( features_all )
-encoding_dim = 15
+encoding_dim = 20
 print "INFO: creating autoencoder %i -> %i -> %i" % ( n_input_all, encoding_dim, n_input_all )
 
 # linear model (=PCA)
@@ -53,11 +53,11 @@ encoded = Dense( encoding_dim )(encoder_input)
 decoded = Dense(  n_input_all )(encoded)
 
 #encoder_input = Input( shape=(n_input_all,) )
-#encoded = Dense( 20, activation='relu' )(encoder_input)
-#encoded = Dense( 16, activation='relu' )(encoded)
-#encoded = Dense( encoding_dim, activation='relu' )(encoded)
-#decoded = Dense( 16, activation='relu' )(encoded)
-#decoded = Dense( 20, activation='relu' )(decoded)
+#encoded = Dense( 22, activation='tanh' )(encoder_input)
+#encoded = Dense( 18, activation='tanh' )(encoded)
+#encoded = Dense( encoding_dim, activation='tanh' )(encoded)
+#decoded = Dense( 18, activation='tanh' )(encoded)
+#decoded = Dense( 22, activation='tanh' )(decoded)
 #decoded = Dense(    n_input_all )(decoded)
 
 autoencoder = Model( inputs=encoder_input, outputs=decoded)
@@ -67,7 +67,7 @@ autoencoder.compile( optimizer = 'adam', loss='mean_squared_error' )
 encoder_filename = "encoder.h5"
 callbacks_list = [
    # val_loss
-   ReduceLROnPlateau(monitor='loss', factor=0.2, patience=3, min_lr=0.001, verbose=1),
+#   ReduceLROnPlateau(monitor='loss', factor=0.2, patience=3, min_lr=0.001, verbose=1),
    EarlyStopping( monitor='loss', patience=3, mode='min', verbose=1 ),
 ]
 autoencoder.fit( X_train_all, X_train_all, epochs=10, batch_size=200, validation_split=0.05, callbacks=callbacks_list, verbose=1 )

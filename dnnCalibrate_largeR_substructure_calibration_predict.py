@@ -29,9 +29,9 @@ np.set_printoptions( precision=2, suppress=True )
 # change this to increase the number of eta slices
 #etabins  = [ [0.0, 0.1], [0.1,0.2], [0.2,0.3], [0.3,0.4], [0.4,0.5], [0.5,0.6], [0.6,0.7], [0.7,0.8], [0.8,0.9], [0.9,1.0], [1.0,1.5],[1.5,2.0] ]
 etabins  = [ [0.0, 0.2], [0.2, 0.5], [0.5, 1.0], [1.0,2.0] ]
-ptbins   = [ [250., 350.], [350., 500.], [500.,600.], [600.,800.], [800.,1200.] ]
-Ebins    = [ [0., 200.], [200.,400.], [400.,600.], [600.,800.], [800.,1000.],[1000.,1500.] ]
-massbins = [ [10., 50.], [ 50., 110.], [110.,140], [140,200], [200,300] ] 
+ptbins   = [ [250., 350.], [350., 500.], [500.,600.], [600.,800.], [800.,1000.], [1000., 2000.] ]
+Ebins    = [ [0., 200.], [200.,400.], [400.,600.], [600.,800.], [800.,1000.],[1000.,2000.] ]
+massbins = [ [30., 50.], [ 50., 110.], [110.,140], [140,200], [200,300] ] 
 #                LOW          W/Z            H          t       QCD          
 
 #################
@@ -85,11 +85,12 @@ def FindMassBin( m ):
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-calibration = "pT_eta_E_M"
-
 filename_scaler = "scaler.largeR_substructure.pkl"
 with open( filename_scaler, "rb" ) as file_scaler:
-  X_scaler = pickle.load( file_scaler )
+  X_scaler_pT  = pickle.load( file_scaler )
+  X_scaler_eta = pickle.load( file_scaler )
+  X_scaler_E   = pickle.load( file_scaler )
+  X_scaler_M   = pickle.load( file_scaler )
   y_scaler = pickle.load( file_scaler )
 print "INFO: scalers load from file", filename_scaler
 
@@ -97,6 +98,7 @@ testing_filename  = sys.argv[1]
 
 model_filename = "model.calib4.h5"
 dnn = load_model( model_filename )
+print "INFO: model loaded from file", model_filename
 
 from features import *
 
@@ -105,19 +107,20 @@ df_testing = pd.read_csv( testing_filename, delimiter=',', names=header )
 
 event_info = df_testing[ [ "mc_Weight" ] ].values
 
-X_test_all = df_testing[features_all].values
-X_test_all = X_scaler.transform( X_test_all )
+#X_test_all = df_testing[features_all].values
+#X_test_all = X_scaler.transform( X_test_all )
+#n_input_all = len( features_all )
 
-# Create autoencoder
-n_input_all = len( features_all )
-encoder = load_model( "encoder.h5" )
-encoding_dim = encoder.layers[-1].output_shape[1]
-print "INFO: loaded encoder %i -> %i" % ( n_input_all, encoding_dim )
+X_test_pT  = df_testing[features_pT].values
+X_test_eta = df_testing[features_eta].values
+X_test_E   = df_testing[features_E].values
+X_test_M   = df_testing[features_M].values
 
-# these are the compressed data
-X_test_all_encoded = encoder.predict(X_test_all)
-print "INFO: example of compressed data:"
-print X_test_all_encoded
+X_test_pT   = X_scaler_pT.transform( X_test_pT )
+X_test_eta  = X_scaler_eta.transform( X_test_eta )
+X_test_E    = X_scaler_E.transform( X_test_E )
+X_test_M    = X_scaler_M.transform( X_test_M )
+X_test_all_encoded = [ X_test_pT, X_test_eta, X_test_E, X_test_M ]
 
 # these should be standard
 y_nocalib = df_testing[y_features_nocalib].values
