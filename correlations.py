@@ -33,6 +33,13 @@ for i in range( n_entries ):
     print "INFO: Event %-9i  (%3.0f %%)" % ( i, perc )
 
   a = np.array( X_train_all[i], dtype='float64' )
+#  if not len(a) == n_features:
+#     print "WARNING: event %i has %i features instead of expected %i" % ( i, len(a), n_features )
+#  print i, len(a), n_features, np.isnan( a )
+#  if np.isnan( a.any() ): 
+#    print a
+#    continue
+
   principal.AddRow( a )
 
 principal.MakePrincipals()

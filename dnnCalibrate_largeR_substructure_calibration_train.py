@@ -129,7 +129,19 @@ y_weight_mc = df_training[ "mc_Weight" ].values
 #~~~~~~~~~
 
 def create_model_calib_4():
-   input_calib = Input( shape=(encoding_dim, ))
+#   input_calib = Input( shape=(encoding_dim, ))
+
+   input_pT  = Input( shape=(n_input_pT,) )
+   input_eta = Input( shape=(n_input_eta,) )
+   input_E   = Input( shape=(n_input_E,) )
+   input_M   = Input( shape=(n_input_M,) )
+
+   x_pT   = Dense(n_input_pT)(input_pT)
+   x_eta  = Dense(n_input_eta)(input_eta)
+   x_E    = Dense(n_input_E)(input_E)
+   x_M    = Dense(n_input_M)(input_M)
+
+   input_calib = concatenate( [ x_pT, x_eta, x_E, x_M ] )
 
    dnn_calib   = Dense( 500, activation='relu' )(input_calib)
    dnn_calib   = Dense( 300, activation='relu' )(dnn_calib)
@@ -147,7 +159,12 @@ def create_model_calib_4():
 #~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 def create_model_calib_4x1():
-   input_calib = Input( shape=(encoding_dim, ))
+#   input_calib = Input( shape=(encoding_dim, ))
+
+   input_pT  = Input( shape=(n_input_pT,) )
+   input_eta = Input( shape=(n_input_eta,) )
+   input_E   = Input( shape=(n_input_E,) )
+   input_M   = Input( shape=(n_input_M,) )
 
 #   x_pT_eta_E_M = Dense(500, activation='relu')(input_calib)
 #   x_pT_eta_E_M = Dense(300, activation='relu')(x_pT_eta_E_M)
@@ -155,7 +172,7 @@ def create_model_calib_4x1():
 #   x_pT_eta_E_M = Dense( 50, activation='relu')(x_pT_eta_E_M)
 #   x_pT_eta_E_M = Dense(  4)(x_pT_eta_E_M)
    
-   dnn_calib_pT = Dense( 500 )(input_calib)
+   dnn_calib_pT = Dense( 500 )(input_pT)
    dnn_calib_pT = Activation('relu')(dnn_calib_pT)
    dnn_calib_pT = Dense( 300)(dnn_calib_pT) 
    dnn_calib_pT = Activation('relu')(dnn_calib_pT)
@@ -165,7 +182,7 @@ def create_model_calib_4x1():
    dnn_calib_pT = Activation('relu')(dnn_calib_pT)
    dnn_calib_pT = Dense(1)(dnn_calib_pT)
 
-   dnn_calib_eta = Dense( 500 )(input_calib)
+   dnn_calib_eta = Dense( 500 )(input_eta)
    dnn_calib_eta = Activation('relu')(dnn_calib_eta)
    dnn_calib_eta = Dense( 300)(dnn_calib_eta)
    dnn_calib_eta = Activation('relu')(dnn_calib_eta)
@@ -175,7 +192,7 @@ def create_model_calib_4x1():
    dnn_calib_eta = Activation('relu')(dnn_calib_eta)
    dnn_calib_eta = Dense(1)(dnn_calib_eta)
 
-   dnn_calib_E = Dense( 500 )(input_calib)
+   dnn_calib_E = Dense( 500 )(input_E)
    dnn_calib_E = Activation('relu')(dnn_calib_E)
    dnn_calib_E = Dense( 300)(dnn_calib_E)
    dnn_calib_E = Activation('relu')(dnn_calib_E)
@@ -185,7 +202,7 @@ def create_model_calib_4x1():
    dnn_calib_E = Activation('relu')(dnn_calib_E)
    dnn_calib_E = Dense(1)(dnn_calib_E)
 
-   dnn_calib_M = Dense( 500 )(input_calib)
+   dnn_calib_M = Dense( 500 )(input_M)
    dnn_calib_M = Activation('relu')(dnn_calib_M)
    dnn_calib_M = Dense( 300)(dnn_calib_M)
    dnn_calib_M = Activation('relu')(dnn_calib_M)
@@ -217,7 +234,7 @@ def create_model_calib_4x1():
 #   dnn_calib_pT_eta_M = Dense(6, activation='linear')(dnn_calib_pT_eta_M)
 
    dnn_calib_pT_eta_E_M = concatenate( [ dnn_calib_pT_eta_E, dnn_calib_pT_eta_M ] )
-   dnn_calib_pT_eta_E_M = Dense(4, activation='linear')(dnn_calib_pT_eta_E_M)
+#   dnn_calib_pT_eta_E_M = Dense(4, activation='linear')(dnn_calib_pT_eta_E_M)
 #   dnn_calib_pT_eta_E_M = Dense(200, activation='linear')(dnn_calib_pT_eta_E_M)
 #   dnn_calib_pT_eta_E_M = Dense(100, activation='linear')(dnn_calib_pT_eta_E_M)
 #   dnn_calib_pT_eta_E_M = Dense(4)(dnn_calib_pT_eta_E_M)
@@ -232,6 +249,7 @@ def create_model_calib_4x1():
 
    calibrated = Dense( 4, activation='linear', name='calibrated' )(dnn_calib_pT_eta_E_M)
 
+   input_calib = [ input_pT, input_eta, input_E, input_M ]
    dnn_model  = Model( inputs=input_calib, outputs=calibrated )
 
    dnn_model.compile( optimizer='adam', loss='mean_squared_error' )
@@ -244,10 +262,10 @@ def create_model_calib_resnet():
       n = K.int_shape(_input)[1]
       _output = Dense(n)(_input)
       #_output = BatchNormalization()(_output)
-      _output = Activation('tanh')(_output)
+      _output = Activation('relu')(_output)
       _output = Dense(n)(_output)
       _output = add( [ _output, _input ] )
-      _output = Activation('tanh')(_output)
+      _output = Activation('relu')(_output)
       return _output
    
 #   input_calib = Input( shape=(encoding_dim, ))
@@ -257,8 +275,8 @@ def create_model_calib_resnet():
    input_E   = Input( shape=(n_input_E,) )
    input_M   = Input( shape=(n_input_M,) )
 
-   tower_pT = Dense(20, kernel_initializer='glorot_normal' )(input_pT)
-   for n_nodes in [ 15, 10 ]:
+   tower_pT = Dense(50, kernel_initializer='glorot_normal' )(input_pT)
+   for n_nodes in [ 30, 20 ]:
       tower_pT = Dense(n_nodes)(tower_pT)
       tower_pT = _block(tower_pT)
    tower_pT = Dense(1)(tower_pT)
@@ -269,14 +287,14 @@ def create_model_calib_resnet():
       tower_eta = _block(tower_eta)
    tower_eta = Dense(1)(tower_eta)
 
-   tower_E = Dense(20, kernel_initializer='glorot_normal' )(input_E)
-   for n_nodes in [ 15, 10 ]:
+   tower_E = Dense(50, kernel_initializer='glorot_normal' )(input_E)
+   for n_nodes in [ 30, 20 ]:
       tower_E = Dense(n_nodes)(tower_E)
       tower_E = _block(tower_E)
    tower_E = Dense(1)(tower_E)
 
-   tower_M = Dense(30, kernel_initializer='glorot_normal' )(input_M)
-   for n_nodes in [ 20, 10 ]:
+   tower_M = Dense(100, kernel_initializer='glorot_normal' )(input_M)
+   for n_nodes in [ 50, 30 ]:
       tower_M = Dense(n_nodes)(tower_M)
       tower_M = _block(tower_M)
    tower_M = Dense(1)(tower_M)
@@ -284,8 +302,13 @@ def create_model_calib_resnet():
    tower_pT_eta_E   = concatenate( [ tower_pT, tower_eta, tower_E ] )
    tower_pT_eta_M   = concatenate( [ tower_pT, tower_eta, tower_M ] )
    tower_pT_eta_E_M = concatenate( [ tower_pT_eta_E, tower_pT_eta_M ] )
-#   tower_pT_eta_E_M = concatenate( [ tower_pT, tower_eta, tower_E, tower_M ] )
-  
+#   tower_pT_eta_E_M = Dense(4)(tower_pT_eta_E_M)
+#   tower_pT_eta_E_M = concatenate( [ tower_pT, tower_eta, tower_E, tower_M ] )  
+
+#   x_pT_E = concatenate( [  tower_pT, tower_E ] )
+#   x_pT_M = concatenate( [  tower_pT, tower_M ] )
+#   x_pT_E_M = concatenate( [ x_pT_E, x_pT_M ] )
+#   tower_pT_eta_E_M = concatenate( [ tower_eta, x_pT_E_M ] )
 
    calibrated = Dense( 4, activation='linear', name='calibrated' )(tower_pT_eta_E_M)
    input_calib = [ input_pT, input_eta, input_E, input_M ] 
@@ -299,22 +322,22 @@ def create_model_calib_resnet():
 
 ############
 
-BATCH_SIZE = 10000
+BATCH_SIZE = 2000
 MAX_EPOCHS = 30
 model_filename = "model.calib4.h5" 
 
 callbacks_list = [ 
    # val_loss
-#   ReduceLROnPlateau(monitor='loss', factor=0.1, patience=4, epsilon=0.1, min_lr=0.001, verbose=1), 
-   EarlyStopping( monitor='loss', patience=5, mode='min', min_delta=0.1, verbose=1 ),
-#   ModelCheckpoint( model_filename + "-{epoch:02d}-{loss:.4f}.h5", monitor='loss', mode='min', save_best_only=True, verbose=0), 
-   ModelCheckpoint( model_filename, monitor='loss', mode='min', save_best_only=True, verbose=1),
+#   ReduceLROnPlateau(monitor='val_loss', factor=0.1, patience=4, epsilon=0.1, min_lr=0.001, verbose=1), 
+   EarlyStopping( monitor='val_loss', patience=5, mode='min', min_delta=0.1, verbose=1 ),
+#   ModelCheckpoint( model_filename + "-{epoch:02d}-{val_loss:.4f}.h5", monitor='val_loss', mode='min', save_best_only=True, verbose=0), 
+   ModelCheckpoint( model_filename, monitor='val_loss', mode='min', save_best_only=True, verbose=1),
 ]
 
 print "INFO: creating calibration DNN"
-#dnn = KerasRegressor( build_fn=create_model_calib_4, epochs=MAX_EPOCHS, batch_size=BATCH_SIZE, validation_split=0.1, callbacks=callbacks_list, verbose=1, sample_weight=y_weight_mc )
-#dnn = KerasRegressor( build_fn=create_model_calib_4x1, epochs=MAX_EPOCHS, batch_size=BATCH_SIZE, validation_split=0.1, callbacks=callbacks_list, verbose=1, sample_weight=y_weight_mc )
-dnn = KerasRegressor( build_fn=create_model_calib_resnet, epochs=MAX_EPOCHS, batch_size=BATCH_SIZE, validation_split=0.1, callbacks=callbacks_list, verbose=1, sample_weight=y_weight_mc )
+#dnn = KerasRegressor( build_fn=create_model_calib_4, epochs=MAX_EPOCHS, batch_size=BATCH_SIZE, validation_split=0.1, callbacks=callbacks_list, verbose=1 )#, sample_weight=y_weight_mc )
+#dnn = KerasRegressor( build_fn=create_model_calib_4x1, epochs=MAX_EPOCHS, batch_size=BATCH_SIZE, validation_split=0.1, callbacks=callbacks_list, verbose=1 ) #, sample_weight=y_weight_mc )
+dnn = KerasRegressor( build_fn=create_model_calib_resnet, epochs=MAX_EPOCHS, batch_size=BATCH_SIZE, validation_split=0.1, callbacks=callbacks_list, verbose=1 )#, sample_weight=y_weight_mc )
 dnn.fit( [X_train_pT,X_train_eta,X_train_E,X_train_M], y_train_all )
 
 #dnn.model.save( model_filename )
