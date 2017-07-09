@@ -128,6 +128,48 @@ y_weight_mc = df_training[ "mc_Weight" ].values
 
 #~~~~~~~~~
 
+def create_model_calib_4x1_merged():
+#   input_calib = Input( shape=(encoding_dim, ))
+
+   input_pT  = Input( shape=(n_input_pT,) )
+   input_eta = Input( shape=(n_input_eta,) )
+   input_E   = Input( shape=(n_input_E,) )
+   input_M   = Input( shape=(n_input_M,) )
+
+   x_pT   = Dense(n_input_pT)(input_pT)
+   x_eta  = Dense(n_input_eta)(input_eta)
+   x_E    = Dense(n_input_E)(input_E)
+   x_M    = Dense(n_input_M)(input_M)
+
+   x_eta = Dense( 10, activation='relu' )(x_eta)
+   x_eta = Dense(5, activation='relu' )(x_eta)
+   x_eta = Dense(1)(x_eta)
+
+   x_pT_M = concatenate( [ x_pT, x_M ] )
+   x_pT_M = Dense( 100, activation='relu' )(x_pT_M)
+   x_pT_M = Dense(  50, activation='relu' )(x_pT_M)
+   x_pT_M = Dense(  30, activation='relu' )(x_pT_M)
+   x_pT_M = Dense(  10, activation='relu' )(x_pT_M)
+   x_pT_M = Dense(2)(x_pT_M)
+
+   x_pT_E = concatenate( [ x_pT, x_E ] )
+   x_pT_E = Dense( 100, activation='relu' )(x_pT_E)
+   x_pT_E = Dense(  50, activation='relu' )(x_pT_E)
+   x_pT_E = Dense(  30, activation='relu' )(x_pT_E)
+   x_pT_E = Dense(  10, activation='relu' )(x_pT_E)
+   x_pT_E = Dense(2)(x_pT_E)
+
+   dnn_calib = concatenate( [ x_eta, x_pT_M, x_pT_E, ] )
+   dnn_calib   = Dense(   4 )(dnn_calib)
+   dnn_model   = Model( inputs=[input_pT,input_eta,input_E,input_M], outputs=dnn_calib )
+
+   dnn_model.compile( optimizer='adam', loss='mean_squared_error' )
+#   dnn_model.compile( optimizer='adam', loss='mean_absolute_error' )
+   print "INFO: DNN calibration model 4x1 merged compiled"
+   return dnn_model
+
+###############
+
 def create_model_calib_4():
 #   input_calib = Input( shape=(encoding_dim, ))
 
@@ -149,7 +191,7 @@ def create_model_calib_4():
    dnn_calib   = Dense( 100, activation='relu' )(dnn_calib)
    dnn_calib   = Dense(  50, activation='relu' )(dnn_calib)
    dnn_calib   = Dense(   4 )(dnn_calib)
-   dnn_model   = Model( inputs=input_calib, outputs=dnn_calib )
+   dnn_model   = Model( inputs=[input_pT,input_eta,input_E,input_M], outputs=dnn_calib )
 
    dnn_model.compile( optimizer='adam', loss='mean_squared_error' )
 #   dnn_model.compile( optimizer='adam', loss='mean_absolute_error' )
@@ -299,11 +341,13 @@ def create_model_calib_resnet():
       tower_M = _block(tower_M)
    tower_M = Dense(1)(tower_M)
 
-   tower_pT_eta_E   = concatenate( [ tower_pT, tower_eta, tower_E ] )
-   tower_pT_eta_M   = concatenate( [ tower_pT, tower_eta, tower_M ] )
-   tower_pT_eta_E_M = concatenate( [ tower_pT_eta_E, tower_pT_eta_M ] )
-#   tower_pT_eta_E_M = Dense(4)(tower_pT_eta_E_M)
-#   tower_pT_eta_E_M = concatenate( [ tower_pT, tower_eta, tower_E, tower_M ] )  
+#   tower_pT_eta_E   = concatenate( [ tower_pT, tower_eta, tower_E ] )
+#   tower_pT_eta_M   = concatenate( [ tower_pT, tower_eta, tower_M ] )
+#   tower_pT_eta_E_M = concatenate( [ tower_pT_eta_E, tower_pT_eta_M ] )
+
+   tower_pT_eta_E_M = concatenate( [ tower_pT, tower_eta, tower_E, tower_M ] )  
+   tower_pT_eta_E_M = Dense(4)(tower_pT_eta_E_M)
+   tower_pT_eta_E_M = Dense(4)(tower_pT_eta_E_M)
 
 #   x_pT_E = concatenate( [  tower_pT, tower_E ] )
 #   x_pT_M = concatenate( [  tower_pT, tower_M ] )
@@ -337,7 +381,8 @@ callbacks_list = [
 print "INFO: creating calibration DNN"
 #dnn = KerasRegressor( build_fn=create_model_calib_4, epochs=MAX_EPOCHS, batch_size=BATCH_SIZE, validation_split=0.1, callbacks=callbacks_list, verbose=1 )#, sample_weight=y_weight_mc )
 #dnn = KerasRegressor( build_fn=create_model_calib_4x1, epochs=MAX_EPOCHS, batch_size=BATCH_SIZE, validation_split=0.1, callbacks=callbacks_list, verbose=1 ) #, sample_weight=y_weight_mc )
-dnn = KerasRegressor( build_fn=create_model_calib_resnet, epochs=MAX_EPOCHS, batch_size=BATCH_SIZE, validation_split=0.1, callbacks=callbacks_list, verbose=1 )#, sample_weight=y_weight_mc )
+#dnn = KerasRegressor( build_fn=create_model_calib_resnet, epochs=MAX_EPOCHS, batch_size=BATCH_SIZE, validation_split=0.1, callbacks=callbacks_list, verbose=1 )#, sample_weight=y_weight_mc )
+dnn = KerasRegressor( build_fn=create_model_calib_4x1_merged, epochs=MAX_EPOCHS, batch_size=BATCH_SIZE, validation_split=0.1, callbacks=callbacks_list, verbose=1 ) #, sample_weight=y_weight_mc )
 dnn.fit( [X_train_pT,X_train_eta,X_train_E,X_train_M], y_train_all )
 
 #dnn.model.save( model_filename )
