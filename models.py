@@ -10,6 +10,7 @@ from keras.layers.advanced_activations import LeakyReLU, PReLU, ELU
 from keras.layers.merge import *
 from keras.layers.convolutional import Conv1D
 from keras.optimizers import *
+from keras.regularizers import l2
 
 from keras.wrappers.scikit_learn import KerasRegressor
 
@@ -17,6 +18,19 @@ from features import *
 
 #############################
 
+from keras.layers.merge import _Merge
+class Subtract(_Merge):
+   def _merge_function(self, inputs):
+      output = inputs[0]
+      for i in range(1, len(inputs)):
+         output -= inputs[i]
+      return output
+
+def subtract(inputs, **kwargs):
+   return Subtract(**kwargs)(inputs)
+
+
+############################
 
 def eta_range( y ):
    ymax = 2.5

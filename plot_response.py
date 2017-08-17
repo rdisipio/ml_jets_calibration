@@ -15,9 +15,8 @@ gROOT.SetBatch(1)
 etabins  = [ [0.0, 0.2], [0.2, 0.5], [0.5, 1.0], [1.0,2.0] ]
 ptbins   = [ [250., 350.], [350., 500.], [500.,600.], [600.,800.], [800.,1000.], [1000., 2000.] ]
 Ebins    = [ [0., 200.], [200.,400.], [400.,600.], [600.,800.], [800.,1000.],[1000.,2000.] ]
-massbins = [ [10., 50.], [ 50., 110.], [110.,140], [140,200], [200,300] ]
+massbins = [ [30., 50.], [ 50., 110.], [110.,140], [140,200], [200,300] ]
 #                LOW          W/Z            H          t       QCD          
-
 
 def SetTH1FStyle( h, color = kBlack, linewidth = 1, fillcolor = 0, fillstyle = 0, markerstyle = 21, markersize = 1.3, linestyle=kSolid ):
     '''Set the style with a long list of parameters'''

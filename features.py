@@ -63,9 +63,9 @@ features_all = [
 features_pT = [
   "jet_nocalib_Pt", "jet_nocalib_E", "jet_nocalib_P", 
   "jet_track_Pt", "jet_track_E", "jet_track_P",
-  "jet_nocalib_Nconstit_over_m", "jet_nocalib_width_over_m", #AC
+#  "jet_nocalib_Nconstit_over_m", "jet_nocalib_width_over_m", #AC
 #  "jet_track_width_over_m", #AC
-    "jet_nocalib_Tau1_wta", "jet_nocalib_Tau2_wta", "jet_nocalib_Tau3_wta",
+#    "jet_nocalib_Tau1_wta", "jet_nocalib_Tau2_wta", "jet_nocalib_Tau3_wta",
 ]
 
 # (pseudo)rapidity
@@ -85,13 +85,15 @@ features_E  = [
 features_M  = [
   "jet_nocalib_M", 
   "jet_track_M", 
-  "jet_nocalib_m_over_pt", #"jet_track_m_over_pt", 
+  "jet_nocalib_m_over_pt", "jet_track_m_over_pt", 
   "jet_nocalib_Nconstit", "jet_nocalib_width", 
-  "jet_nocalib_C2",
+#  "jet_nocalib_Nconstit_over_m", 
+  "jet_nocalib_C2", #"jet_nocalib_D2",
   "jet_nocalib_Tau1_wta", "jet_nocalib_Tau2_wta", "jet_nocalib_Tau3_wta",
   "jet_track_width",
-  "jet_track_C2",
-  "jet_track_Tau1_wta", #"jet_track_Tau2_wta", "jet_track_Tau3_wta",   
+  "jet_track_C2", "jet_track_D2",
+  "jet_track_Tau1_wta", "jet_track_Tau2_wta", "jet_track_Tau3_wta",   
+  "jet_nocalib_Tau32_wta", "jet_track_Tau32_wta",
 ]
 
 #print "INFO: all input features:"

@@ -72,9 +72,9 @@ h_dnncalib = infile.Get( "%s_response_dnncalib" % ( obs ) )
 #h_nocalib.Rebin2D(2,2)
 #h_dnncalib.Rebin2D(2,2)
 
-p_calib    = h_calib.ProfileX()
-p_nocalib  = h_nocalib.ProfileX()
-p_dnncalib = h_dnncalib.ProfileX()
+p_calib    = h_calib.ProfileX() # "pfx_calib", 1, -1, "s" )
+p_nocalib  = h_nocalib.ProfileX() # "pfx_nocalib", 1, -1, "s" )
+p_dnncalib = h_dnncalib.ProfileX() # "pfx_dnn", 1, -1, "s" )
 
 SetTH1FStyle( p_calib,    color=kRed, linewidth=2, markerstyle=22 )
 SetTH1FStyle( p_nocalib,  color=kBlack, linewidth=2, markerstyle=20 )
