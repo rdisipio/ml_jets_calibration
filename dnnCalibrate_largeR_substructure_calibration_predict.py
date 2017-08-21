@@ -356,21 +356,21 @@ for i in range( n_entries ):
   M_response_calib    = M_calib    / M_truth if M_truth > 0. else -1.
   M_response_dnncalib = M_dnncalib / M_truth if M_truth > 0. else -1.
 
-  h_pT_response_nocalib.Fill(  pT_nocalib,  pT_response_nocalib, w )
-  h_pT_response_calib.Fill(    pT_calib,    pT_response_calib, w )
-  h_pT_response_dnncalib.Fill( pT_dnncalib, pT_response_dnncalib, w )
+  h_pT_response_nocalib.Fill(  pT_truth,  pT_response_nocalib, w )
+  h_pT_response_calib.Fill(    pT_truth,  pT_response_calib, w )
+  h_pT_response_dnncalib.Fill( pT_truth,  pT_response_dnncalib, w )
 
-  h_E_response_nocalib.Fill(  E_nocalib,  E_response_nocalib, w )
-  h_E_response_calib.Fill(    E_calib,    E_response_calib, w )
-  h_E_response_dnncalib.Fill( E_dnncalib, E_response_dnncalib, w )
+  h_E_response_nocalib.Fill(  E_truth,  E_response_nocalib, w )
+  h_E_response_calib.Fill(    E_truth,  E_response_calib, w )
+  h_E_response_dnncalib.Fill( E_truth,  E_response_dnncalib, w )
 
-  h_eta_response_nocalib.Fill(  abs(eta_nocalib),  abs(eta_response_nocalib), w )
-  h_eta_response_calib.Fill(    abs(eta_calib),    abs(eta_response_calib), w )
-  h_eta_response_dnncalib.Fill( abs(eta_dnncalib), abs(eta_response_dnncalib), w )
+  h_eta_response_nocalib.Fill(  abs(eta_truth),  abs(eta_response_nocalib), w )
+  h_eta_response_calib.Fill(    abs(eta_truth),  abs(eta_response_calib), w )
+  h_eta_response_dnncalib.Fill( abs(eta_truth),  abs(eta_response_dnncalib), w )
 
-  h_M_response_nocalib.Fill(  M_nocalib,  M_response_nocalib, w )
-  h_M_response_calib.Fill(    M_calib,    M_response_calib, w )
-  h_M_response_dnncalib.Fill( M_dnncalib, M_response_dnncalib, w )
+  h_M_response_nocalib.Fill(  M_truth,  M_response_nocalib, w )
+  h_M_response_calib.Fill(    M_truth,  M_response_calib, w )
+  h_M_response_dnncalib.Fill( M_truth,  M_response_dnncalib, w )
 
 
   # fill the same, but divided into eta bins

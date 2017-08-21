@@ -237,7 +237,8 @@ i_M  = 3
 n_entries = len( y_truth )
 print "INFO: looping over %i entries" % n_entries
 for i in range( n_entries ):
-  w = event_info[i][0]
+  #w = event_info[i][0]
+  w = 1.0
 
   if ( n_entries < 10 ) or ( (i+1) % int(float(n_entries)/10.)  == 0 ):
     perc = 100. * i / float(n_entries)
@@ -310,21 +311,37 @@ for i in range( n_entries ):
   M_response_calib    = M_calib    / M_truth if M_truth > 0. else -1.
   M_response_dnncalib = M_dnncalib / M_truth if M_truth > 0. else -1.
 
-  h_pT_response_nocalib.Fill(  pT_nocalib,  pT_response_nocalib, w )
-  h_pT_response_calib.Fill(    pT_calib,    pT_response_calib, w )
-  h_pT_response_dnncalib.Fill( pT_dnncalib, pT_response_dnncalib, w )
+#  h_pT_response_nocalib.Fill(  pT_nocalib,  pT_response_nocalib, w )
+#  h_pT_response_calib.Fill(    pT_calib,    pT_response_calib, w )
+#  h_pT_response_dnncalib.Fill( pT_dnncalib, pT_response_dnncalib, w )
 
-  h_E_response_nocalib.Fill(  E_nocalib,  E_response_nocalib, w )
-  h_E_response_calib.Fill(    E_calib,    E_response_calib, w )
-  h_E_response_dnncalib.Fill( E_dnncalib, E_response_dnncalib, w )
+#  h_E_response_nocalib.Fill(  E_nocalib,  E_response_nocalib, w )
+#  h_E_response_calib.Fill(    E_calib,    E_response_calib, w )
+#  h_E_response_dnncalib.Fill( E_dnncalib, E_response_dnncalib, w )
 
-  h_eta_response_nocalib.Fill(  eta_nocalib,  eta_response_nocalib, w )
-  h_eta_response_calib.Fill(    eta_calib,    eta_response_calib, w )
-  h_eta_response_dnncalib.Fill( eta_dnncalib, eta_response_dnncalib, w )
+#  h_eta_response_nocalib.Fill(  eta_nocalib,  eta_response_nocalib, w )
+#  h_eta_response_calib.Fill(    eta_calib,    eta_response_calib, w )
+#  h_eta_response_dnncalib.Fill( eta_dnncalib, eta_response_dnncalib, w )
 
-  h_M_response_nocalib.Fill(  M_nocalib,  M_response_nocalib, w )
-  h_M_response_calib.Fill(    M_calib,    M_response_calib, w )
-  h_M_response_dnncalib.Fill( M_dnncalib, M_response_dnncalib, w )
+#  h_M_response_nocalib.Fill(  M_nocalib,  M_response_nocalib, w )
+#  h_M_response_calib.Fill(    M_calib,    M_response_calib, w )
+#  h_M_response_dnncalib.Fill( M_dnncalib, M_response_dnncalib, w )
+
+  h_pT_response_nocalib.Fill(  pT_truth,  pT_response_nocalib, w )
+  h_pT_response_calib.Fill(    pT_truth,    pT_response_calib, w )
+  h_pT_response_dnncalib.Fill( pT_truth, pT_response_dnncalib, w )
+
+  h_E_response_nocalib.Fill(  E_truth,  E_response_nocalib, w )
+  h_E_response_calib.Fill(    E_truth,    E_response_calib, w )
+  h_E_response_dnncalib.Fill( E_truth, E_response_dnncalib, w )
+
+  h_eta_response_nocalib.Fill(  eta_truth,  eta_response_nocalib, w )
+  h_eta_response_calib.Fill(    eta_truth,  eta_response_calib, w )
+  h_eta_response_dnncalib.Fill( eta_truth,  eta_response_dnncalib, w )
+
+  h_M_response_nocalib.Fill(  M_truth,  M_response_nocalib, w )
+  h_M_response_calib.Fill(    M_truth,    M_response_calib, w )
+  h_M_response_dnncalib.Fill( M_truth, M_response_dnncalib, w )
 
 
   # fill the same, but divided into eta bins
