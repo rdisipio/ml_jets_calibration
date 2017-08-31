@@ -85,7 +85,14 @@ def FindMassBin( m ):
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-filename_scaler = "scaler.largeR_substructure.pkl"
+testing_filename  = sys.argv[1]
+
+model_name = "4p_resnet"
+if len(sys.argv) > 2:
+   model_name = sys.argv[2]
+print "INFO: Using model", model_name
+
+filename_scaler = "scaler.%s.pkl" % model_name
 with open( filename_scaler, "rb" ) as file_scaler:
   X_scaler_pT  = pickle.load( file_scaler )
   X_scaler_eta = pickle.load( file_scaler )
@@ -94,9 +101,7 @@ with open( filename_scaler, "rb" ) as file_scaler:
   y_scaler = pickle.load( file_scaler )
 print "INFO: scalers load from file", filename_scaler
 
-testing_filename  = sys.argv[1]
-
-model_filename = "model.calib4.h5"
+model_filename = "model.%s.h5" % model_name
 dnn = load_model( model_filename )
 print "INFO: model loaded from file", model_filename
 
@@ -132,7 +137,8 @@ y_dnncalib = dnn.predict( X_test_all_encoded )
 y_dnncalib = y_scaler.inverse_transform( y_dnncalib )
 
 # Create ROOT output file
-outfilename = testing_filename.split("/")[-1].replace("csv","") +  model_filename.replace(".h5",".histograms.root")
+#outfilename = testing_filename.split("/")[-1].replace("csv","") +  model_filename.replace(".h5",".histograms.root")
+outfilename = testing_filename.split("/")[-1].replace("csv","") + model_name + ".histograms.root"
 print "INFO: output file:", outfilename
 outfile = TFile.Open( outfilename, "RECREATE" )
 
